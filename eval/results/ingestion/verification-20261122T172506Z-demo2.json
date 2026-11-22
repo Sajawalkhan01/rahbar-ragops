@@ -1,0 +1,10 @@
+{
+ "run_id": "20261122T172506Z-demo2",
+ "timestamp": "2026-11-22T17:25:06Z",
+ "inbox": "data/inbox/demo",
+ "summary": {
+  "pass": 0,
+  "fail": 0
+ },
+ "documents": []
+}

@@ -1,0 +1,47 @@
+{
+ "run_id": "20261122T172354Z-batchB-first",
+ "timestamp": "2026-11-22T17:24:21Z",
+ "inbox": "data/inbox/batch_b",
+ "origin": "batch_b",
+ "collection": "rahbar",
+ "embed_model": "nomic-embed-text",
+ "embed_model_version": "0a109f422b47",
+ "chunk_size": 400,
+ "chunk_overlap": 50,
+ "documents_seen": 18,
+ "unchanged": [],
+ "new": [
+  "library-rules.md",
+  "examination-rules-faq.md",
+  "fee-structure-2027-28.md",
+  "internship-guidelines.pdf",
+  "library-rules-reworded.md",
+  "course-withdrawal-guide.md",
+  "scholarship-policy-2026.md",
+  "plagiarism-and-ai-guidance.md"
+ ],
+ "changed": [],
+ "deleted": [],
+ "quarantined": [
+  "empty-notice.md",
+  "corrupt-timetable.pdf",
+  "library-rules-copy.md",
+  "no-metadata-notice.md",
+  "scan-notice-garbled.txt",
+  "exam-schedule-truncated.md",
+  "library-rules-reformatted.md",
+  "examination-rules-faq-draft.md",
+  "scholarship-policy-2026-copy.md",
+  "academic-rules-2023-resubmission.md"
+ ],
+ "skipped_previously_quarantined": [],
+ "archived_superseded_versions": [
+  "fee-structure-page"
+ ],
+ "chunks_embedded": 26,
+ "document_embeddings_for_near_duplicate_check": 12,
+ "chunks_in_collection": 627,
+ "orphan_chunk_counts_after_delete": {},
+ "index_changed": true,
+ "seconds": 26.84
+}
