@@ -10,6 +10,10 @@ def get_provider(settings: Settings) -> LLMProvider:
         from .stub import StubProvider
 
         return StubProvider()
+    if name == "extractive":
+        from .extractive import ExtractiveProvider
+
+        return ExtractiveProvider(settings)
     if name in ("ollama-host", "ollama-incluster"):
         from .ollama import OllamaProvider
 
@@ -19,5 +23,5 @@ def get_provider(settings: Settings) -> LLMProvider:
 
         return HostedProvider(settings)
     raise ValueError(
-        f"unknown LLM_PROVIDER {name!r}; expected stub, ollama-host, ollama-incluster or hosted"
+        f"unknown LLM_PROVIDER {name!r}; expected stub, extractive, ollama-host, ollama-incluster or hosted"
     )

@@ -1,0 +1,39 @@
+{
+  "_note": "Hand-written for Assignment 03. Paraphrase pairs say the same thing in different words (university-rules domain); unrelated pairs are about different things.",
+  "paraphrase": [
+    ["A student must keep a CGPA of at least 2.00 to avoid academic warning.", "To stay off academic warning, an undergraduate needs a cumulative GPA of 2.00 or more."],
+    ["The admission fee is paid once, when the student first joins the university.", "Students pay the admission charge a single time at enrolment."],
+    ["Fees are not returned when a student drops a course.", "No refund is given if a student withdraws from a course."],
+    ["A student may repeat at most two courses in the summer semester.", "In summer, no more than two courses can be retaken by a student."],
+    ["Students must attend the examination hall ten minutes before the paper starts.", "Candidates have to be seated in the hall ten minutes ahead of the start of the paper."],
+    ["A fine of twenty rupees per day is charged for each overdue library book.", "Every late library book costs the borrower Rs 20 for each day it is overdue."],
+    ["The deadline to withdraw from a course is the last day of the makeup week.", "A course can be dropped up to the final day of the make-up week."],
+    ["Plagiarism means presenting someone else's work as your own.", "Passing off the ideas or words of another person as one's own effort is plagiarism."],
+    ["A semester may be frozen for up to two semesters.", "Admission can be put on hold for a maximum of two semesters."],
+    ["Mobile phones are not allowed inside the examination hall.", "Students may not bring cell phones into the exam room."],
+    ["The scholarship is withdrawn if the CGPA stays below 3.00 for two consecutive semesters.", "A scholarship holder loses the award after two semesters in a row under a 3.00 CGPA."],
+    ["Tuition fee is payable in full before the start of each semester.", "The whole tuition amount must be paid prior to the beginning of every semester."],
+    ["A student with unpaid library fines cannot collect a transcript.", "Transcripts are withheld from anyone who still owes library fines."],
+    ["The internship must last at least eight weeks.", "An internship shorter than eight weeks does not satisfy the requirement."],
+    ["The Head of Department may change the course load of a student.", "A department head is allowed to adjust how many courses a student takes."],
+    ["Students applying for rechecking must pay the rechecking fee within three working days.", "Within three working days of the result, a student wanting a recheck has to pay the rechecking charge."]
+  ],
+  "unrelated": [
+    ["A student must keep a CGPA of at least 2.00 to avoid academic warning.", "Add two cups of flour and a pinch of salt to the boiling water."],
+    ["The admission fee is paid once, when the student first joins the university.", "The cricket team won the final match by six wickets."],
+    ["Fees are not returned when a student drops a course.", "The engine of the car needs an oil change every ten thousand kilometres."],
+    ["A student may repeat at most two courses in the summer semester.", "The weather tomorrow will be cloudy with light rain in the evening."],
+    ["Students must attend the examination hall ten minutes before the paper starts.", "Photosynthesis converts sunlight, water and carbon dioxide into glucose."],
+    ["A fine of twenty rupees per day is charged for each overdue library book.", "The new smartphone has a faster processor and a brighter display."],
+    ["The deadline to withdraw from a course is the last day of the makeup week.", "Mount Everest is the highest mountain above sea level."],
+    ["Plagiarism means presenting someone else's work as your own.", "Bake the cake at one hundred and eighty degrees for thirty minutes."],
+    ["A semester may be frozen for up to two semesters.", "The football stadium holds about forty thousand spectators."],
+    ["Mobile phones are not allowed inside the examination hall.", "Regular exercise lowers the risk of heart disease."],
+    ["The scholarship is withdrawn if the CGPA stays below 3.00 for two consecutive semesters.", "The train to Lahore leaves from platform four at nine o'clock."],
+    ["Tuition fee is payable in full before the start of each semester.", "Dolphins use sound waves to find fish in the ocean."],
+    ["A student with unpaid library fines cannot collect a transcript.", "Plant the tomato seedlings after the last frost of spring."],
+    ["The internship must last at least eight weeks.", "The painting was sold at auction for a record price."],
+    ["The Head of Department may change the course load of a student.", "Volcanic eruptions can change the climate of the whole planet."],
+    ["Students applying for rechecking must pay the rechecking fee within three working days.", "The recipe calls for fresh basil, garlic and olive oil."]
+  ]
+}

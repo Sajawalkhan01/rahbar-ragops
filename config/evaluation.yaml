@@ -1,0 +1,22 @@
+# Part B/C/E settings. The one command `python -m ragops.evaluation.suite` reads this file.
+seed: 20260301
+k_values: [3, 5]
+ndcg_k: 5
+top_k: 5                       # passages given to the generator
+provider: extractive           # extractive (deterministic) | stub | ollama-host | hosted
+collection: rahbar
+golden: eval/golden.jsonl
+results_dir: eval/results
+embedding:
+  paraphrase_pairs: eval/embedding_pairs.json
+  determinism_repeats: 2
+noise:
+  typo_rate: 0.08              # share of query words that get one character edit
+  irrelevant_docs_dir: eval/noise_docs
+generation:
+  support_threshold: 0.55      # an answer sentence is "supported" if this share of its content words is in the context
+  abstain_min_overlap: 0.34    # extractive generator abstains below this question/sentence overlap
+coverage:
+  threshold: 0.78              # cosine similarity for "this live query is covered by a golden question"
+  required_share: 0.85         # paper's example: a gap when fewer than 85% reach the score
+  live_queries: eval/live_queries/live_queries.jsonl
