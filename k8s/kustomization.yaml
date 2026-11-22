@@ -1,0 +1,12 @@
+# kubectl apply -k k8s/   creates the always-on parts: namespace, storage, config, Chroma, Redis, API, candidate.
+# Jobs and the CronJob are applied separately (they run on demand): see k8s/README.md.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - 00-namespace.yaml
+  - 10-storage.yaml
+  - 20-configmaps.yaml
+  - 30-chroma.yaml
+  - 31-redis.yaml
+  - 40-api.yaml
+  - 41-api-candidate.yaml

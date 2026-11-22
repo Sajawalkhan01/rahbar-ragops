@@ -1,0 +1,43 @@
+# Build the CANDIDATE collection (Part C change: chunk size 200, overlap 25) from the same Batch A files.
+# Same code and the same single-writer rules; only the target collection and chunk settings differ, and it
+# keeps its own ledger (state/ledger.rahbar_c200.json), so it cannot disturb the live collection `rahbar`.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ingest-candidate
+  namespace: ragops
+  labels: {app: ingest, app.kubernetes.io/part-of: ragops}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 5400
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata: {labels: {app: ingest, app.kubernetes.io/part-of: ragops}}
+    spec:
+      restartPolicy: Never
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: ingest
+          image: ragops:v1
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "ragops.ingestion", "run", "--inbox", "/data/inbox/batch_a", "--label", "k8s-candidate"]
+          envFrom: [{configMapRef: {name: ragops-config}}]
+          env:
+            - {name: RAGOPS_ROLE, value: ingestor}
+            - {name: CHROMA_COLLECTION, value: rahbar_c200}
+            - {name: CHUNK_SIZE, value: "200"}
+            - {name: CHUNK_OVERLAP, value: "25"}
+          resources:
+            requests: {cpu: 250m, memory: 512Mi}
+            limits: {cpu: "1", memory: 1536Mi}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          volumeMounts:
+            - {name: data, mountPath: /data}
+            - {name: results, mountPath: /results}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - {name: data, persistentVolumeClaim: {claimName: ragops-data}}
+        - {name: results, persistentVolumeClaim: {claimName: ragops-results}}
+        - {name: tmp, emptyDir: {sizeLimit: 1Gi}}

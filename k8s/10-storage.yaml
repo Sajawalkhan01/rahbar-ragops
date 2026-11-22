@@ -1,0 +1,26 @@
+# Three PersistentVolumeClaims (ReadWriteOnce: all pods are on the single minikube node).
+#   ragops-data     the data lake: inbox, datalake, quarantine, archive, ledger/state, reports.
+#                   Mounted READ-WRITE only by the ingestion Job/CronJob (the single writer) and the loader pod.
+#   ragops-results  evaluation result files (eval/results). Mounted by evaluation Jobs.
+#   ragops-traces   JSONL query traces. Mounted by the API pods and the evaluation Jobs.
+# Chroma's own volume is the StatefulSet's volumeClaimTemplate (data-chroma-0) in 30-chroma.yaml.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: ragops-data, namespace: ragops, labels: {app.kubernetes.io/part-of: ragops}}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: {requests: {storage: 3Gi}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: ragops-results, namespace: ragops, labels: {app.kubernetes.io/part-of: ragops}}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: {requests: {storage: 500Mi}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: ragops-traces, namespace: ragops, labels: {app.kubernetes.io/part-of: ragops}}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: {requests: {storage: 500Mi}}

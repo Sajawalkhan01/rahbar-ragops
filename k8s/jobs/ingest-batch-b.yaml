@@ -1,0 +1,39 @@
+# Ingest Batch B (the planted-problem batch) into the live collection. Same Job as k8s/ingest-job.yaml, other inbox.
+# Files must already be in /data/inbox/batch_b (see k8s/README.md, "Loading documents").
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ingest-batch-b
+  namespace: ragops
+  labels: {app: ingest, app.kubernetes.io/part-of: ragops}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 3600
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata: {labels: {app: ingest, app.kubernetes.io/part-of: ragops}}
+    spec:
+      restartPolicy: Never
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: ingest
+          image: ragops:v1
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "ragops.ingestion", "run", "--inbox", "/data/inbox/batch_b", "--label", "k8s-batchB"]
+          envFrom: [{configMapRef: {name: ragops-config}}]
+          env:
+            - {name: RAGOPS_ROLE, value: ingestor}
+          resources:
+            requests: {cpu: 250m, memory: 512Mi}
+            limits: {cpu: "1", memory: 1536Mi}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          volumeMounts:
+            - {name: data, mountPath: /data}
+            - {name: results, mountPath: /results}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - {name: data, persistentVolumeClaim: {claimName: ragops-data}}
+        - {name: results, persistentVolumeClaim: {claimName: ragops-results}}
+        - {name: tmp, emptyDir: {sizeLimit: 1Gi}}

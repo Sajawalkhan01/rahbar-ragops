@@ -1,0 +1,45 @@
+# Evaluate the CANDIDATE (collection rahbar_c200) and apply the release gate against the newest baseline result
+# on the results volume. The Job FAILS (exit 1) when the gate fails, so a rejected candidate shows as Failed
+# and is never rolled out. Thresholds come from the release-thresholds ConfigMap.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eval-candidate
+  namespace: ragops
+  labels: {app: eval, app.kubernetes.io/part-of: ragops}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 3600
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata: {labels: {app: eval, app.kubernetes.io/part-of: ragops}}
+    spec:
+      restartPolicy: Never
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: eval
+          image: ragops:v1
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c"]
+          args:
+            - >-
+              python -m ragops.evaluation.suite --label candidate-chunk200
+              --experiment experiments/candidate/candidate-chunk200.yaml --repeat 2
+              --gate-against "$(ls -t /results/suite-baseline-*.json | head -1)"
+          envFrom: [{configMapRef: {name: ragops-config}}]
+          resources:
+            requests: {cpu: 250m, memory: 384Mi}
+            limits: {cpu: "1", memory: 768Mi}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          volumeMounts:
+            - {name: results, mountPath: /results}
+            - {name: traces, mountPath: /traces}
+            - {name: thresholds, mountPath: /app/config/release_thresholds.yaml, subPath: release_thresholds.yaml, readOnly: true}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - {name: results, persistentVolumeClaim: {claimName: ragops-results}}
+        - {name: traces, persistentVolumeClaim: {claimName: ragops-traces}}
+        - {name: thresholds, configMap: {name: release-thresholds}}
+        - {name: tmp, emptyDir: {}}

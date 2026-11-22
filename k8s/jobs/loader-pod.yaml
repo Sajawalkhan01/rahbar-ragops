@@ -1,0 +1,27 @@
+# A throw-away pod that mounts the data volume so you can copy documents into an inbox folder:
+#   kubectl apply -f k8s/jobs/loader-pod.yaml
+#   kubectl wait --for=condition=Ready pod/loader -n ragops
+#   kubectl exec -n ragops loader -- mkdir -p /data/inbox/batch_b
+#   kubectl cp eval/batch_b/. ragops/loader:/data/inbox/batch_b
+#   kubectl delete pod loader -n ragops
+# It is NOT the single writer of the vector store: it never touches Chroma, it only places files in the inbox.
+apiVersion: v1
+kind: Pod
+metadata: {name: loader, namespace: ragops, labels: {app: loader}}
+spec:
+  restartPolicy: Never
+  enableServiceLinks: false
+  automountServiceAccountToken: false
+  securityContext: {runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001}
+  containers:
+    - name: loader
+      image: ragops:v1
+      imagePullPolicy: IfNotPresent
+      command: ["sleep", "3600"]
+      resources:
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {cpu: 200m, memory: 128Mi}
+      volumeMounts:
+        - {name: data, mountPath: /data}
+  volumes:
+    - {name: data, persistentVolumeClaim: {claimName: ragops-data}}

@@ -1,0 +1,50 @@
+# The vector store: a StatefulSet (it owns a volume) with its own PVC from volumeClaimTemplates, so the index
+# survives pod deletion. ONE replica. Reads come from the API/evaluation pods; the only writer is the
+# ingestion Job (see k8s/README.md, "single writer").
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: chroma, namespace: ragops, labels: {app: chroma, app.kubernetes.io/part-of: ragops}}
+spec:
+  serviceName: chroma
+  replicas: 1
+  selector: {matchLabels: {app: chroma}}
+  template:
+    metadata: {labels: {app: chroma, app.kubernetes.io/part-of: ragops}}
+    spec:
+      enableServiceLinks: false      # a Service named chroma would inject CHROMA_PORT=tcp://..., which Chroma misreads
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 1000, runAsGroup: 1000, fsGroup: 1000, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: chroma
+          image: chromadb/chroma:1.0.12      # same version as chromadb-client in requirements.txt
+          imagePullPolicy: IfNotPresent
+          ports: [{name: http, containerPort: 8000}]
+          env:
+            - {name: IS_PERSISTENT, value: "TRUE"}
+            - {name: PERSIST_DIRECTORY, value: /data}
+            - {name: ANONYMIZED_TELEMETRY, value: "FALSE"}
+          startupProbe: {httpGet: {path: /api/v2/heartbeat, port: 8000}, failureThreshold: 30, periodSeconds: 2}
+          livenessProbe: {httpGet: {path: /api/v2/heartbeat, port: 8000}, periodSeconds: 20, failureThreshold: 3}
+          readinessProbe: {httpGet: {path: /api/v2/heartbeat, port: 8000}, periodSeconds: 10}
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 1Gi}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          volumeMounts:
+            - {name: data, mountPath: /data}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - {name: tmp, emptyDir: {}}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources: {requests: {storage: 2Gi}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: chroma, namespace: ragops, labels: {app: chroma}}
+spec:
+  type: ClusterIP
+  selector: {app: chroma}
+  ports: [{name: http, port: 8000, targetPort: 8000}]

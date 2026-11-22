@@ -1,0 +1,43 @@
+# The Part B evaluation suite as a Job (assignment F2):   kubectl apply -f k8s/eval-job.yaml
+# Writes result files to the results volume and traces to the traces volume. Reads the release thresholds from
+# the release-thresholds ConfigMap (mounted as a file). When --gate-against is given the Job applies the release
+# gate and EXITS NON-ZERO when it fails, so `kubectl get job` shows Failed. This manifest evaluates the
+# baseline (no gate); the candidate versions are in k8s/jobs/.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eval
+  namespace: ragops
+  labels: {app: eval, app.kubernetes.io/part-of: ragops}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 3600
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata: {labels: {app: eval, app.kubernetes.io/part-of: ragops}}
+    spec:
+      restartPolicy: Never
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: eval
+          image: ragops:v1
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "ragops.evaluation.suite", "--label", "baseline",
+                    "--experiment", "experiments/baseline/baseline.yaml", "--repeat", "2"]
+          envFrom: [{configMapRef: {name: ragops-config}}]
+          resources:
+            requests: {cpu: 250m, memory: 384Mi}
+            limits: {cpu: "1", memory: 768Mi}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          volumeMounts:
+            - {name: results, mountPath: /results}
+            - {name: traces, mountPath: /traces}
+            - {name: thresholds, mountPath: /app/config/release_thresholds.yaml, subPath: release_thresholds.yaml, readOnly: true}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - {name: results, persistentVolumeClaim: {claimName: ragops-results}}
+        - {name: traces, persistentVolumeClaim: {claimName: ragops-traces}}
+        - {name: thresholds, configMap: {name: release-thresholds}}
+        - {name: tmp, emptyDir: {}}

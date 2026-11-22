@@ -1,0 +1,43 @@
+# The ingestion Job: verify -> quarantine -> incremental update. The ONLY writer to the vector store:
+# it alone carries RAGOPS_ROLE=ingestor and mounts the data volume read-write (the code refuses to write
+# otherwise, and takes an exclusive lock file on the volume). Run on demand:
+#   kubectl delete job ingest -n ragops --ignore-not-found; kubectl apply -f k8s/ingest-job.yaml
+# The inbox is a folder on the data volume (/data/inbox/<name>); put documents there with
+# k8s/jobs/loader-pod.yaml (see k8s/README.md). Change --inbox to ingest another folder.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ingest
+  namespace: ragops
+  labels: {app: ingest, app.kubernetes.io/part-of: ragops}
+spec:
+  backoffLimit: 1
+  activeDeadlineSeconds: 5400
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata: {labels: {app: ingest, app.kubernetes.io/part-of: ragops}}
+    spec:
+      restartPolicy: Never
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: ingest
+          image: ragops:v1
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "ragops.ingestion", "run", "--inbox", "/data/inbox/batch_a", "--label", "k8s"]
+          envFrom: [{configMapRef: {name: ragops-config}}]
+          env:
+            - {name: RAGOPS_ROLE, value: ingestor}
+          resources:
+            requests: {cpu: 250m, memory: 512Mi}
+            limits: {cpu: "1", memory: 1536Mi}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          volumeMounts:
+            - {name: data, mountPath: /data}
+            - {name: results, mountPath: /results}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - {name: data, persistentVolumeClaim: {claimName: ragops-data}}
+        - {name: results, persistentVolumeClaim: {claimName: ragops-results}}
+        - {name: tmp, emptyDir: {sizeLimit: 1Gi}}
