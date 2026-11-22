@@ -18,6 +18,7 @@ import logging
 import time
 from typing import Any
 
+from .. import tracing
 from ..config import Settings
 from ..logjson import request_id_var
 from ..providers.llm.base import LLMProvider
@@ -27,6 +28,7 @@ from ..retrieval.bm25 import exact_terms, tokenize
 from ..routes import metrics
 from ..schemas import Answer, AskResponse, Citation, Passage, RetrievedRef
 from .cache import SemanticCache
+from .prompt import _INJECTION, build_messages
 from .followup import is_followup
 from .turns import TurnStore
 from .validate import generate_validated
@@ -84,6 +86,42 @@ def _cache_payload(response: AskResponse) -> dict[str, Any]:
     return response.model_dump(exclude={"request_id", "cached"})
 
 
+def _doc_id(chunk_id: str) -> str:
+    """Chunk ids are `<document slug>-<position>` (indexer/pipeline/chunk.py)."""
+    return chunk_id.rsplit("-", 1)[0]
+
+
+def _trace_retrieved(passages: list[Passage]) -> None:
+    tracing.note(
+        retrieved=[{"rank": n, "chunk_id": p.chunk_id, "doc_id": _doc_id(p.chunk_id), "source": p.source,
+                    "section": p.section, "page": p.page, "doc_version": p.doc_version,
+                    "superseded": p.superseded, "score": round(p.score, 4)}
+                   for n, p in enumerate(passages, start=1)],
+        context=[{"chunk_id": p.chunk_id, "text": p.text} for p in passages],
+    )
+
+
+def _trace_done(response: AskResponse, settings: Settings, provider: LLMProvider, **extra: Any) -> None:
+    record = tracing.finish(
+        request_id=response.request_id,
+        model={"provider": provider.name, "llm_model": settings.llm_model,
+               "temperature": settings.temperature, "top_k": settings.top_k,
+               "relevance_floor": settings.relevance_floor, "hybrid": settings.hybrid,
+               "filter_superseded": settings.filter_superseded},
+        response={"answer": response.answer, "answered_from_context": response.answered_from_context,
+                  "confidence": response.confidence, "cached": response.cached,
+                  "invalid_citations_removed": response.invalid_citations_removed},
+        citations=[c.model_dump() for c in response.citations],
+        **extra,
+    )
+    if record is not None:
+        for name, ms in record["latency_ms"].items():
+            metrics.STAGE_SECONDS.labels(stage=name).observe(ms / 1000)
+        for g in record["guardrails"]:
+            if g["action"] == "injection_sentence_removed":
+                metrics.INJECTIONS.labels(where="passage").inc()
+
+
 def answer_question(
     question: str,
     retriever: Retriever,
@@ -95,34 +133,57 @@ def answer_question(
 ) -> AskResponse:
     request_id = request_id_var.get()
     started = time.perf_counter()
+    tracing.begin(question, embedding_model=settings.embed_model)
+    info = getattr(retriever, "index_info", None)
+    if info is not None:
+        try:
+            idx = info()
+            tracing.note(collection=idx["collection"], index_id=idx["index_id"],
+                         embedding_model=idx["embed_model"],
+                         embedding_model_version=idx["embed_model_version"],
+                         collection_version=idx["collection_version"])
+        except Exception:   # a trace must never break an answer
+            pass
+    if _INJECTION.search(question):
+        tracing.guardrail("question_injection_flagged",
+                          reason="the question contains instruction-like text; it is fenced as data and "
+                                 "the answer rules say not to follow it")
+        metrics.INJECTIONS.labels(where="question").inc()
 
     # --- follow-up detection -------------------------------------------------------------
     previous = turns.last_question(session_id) if turns else None
     followup = is_followup(question, previous is not None)
     # A follow-up leans on the earlier turn, so retrieval sees both questions.
     search_text = f"{previous} {question}" if (followup and previous) else question
+    if search_text != question:
+        tracing.note(rewritten_query=search_text)
 
     # --- semantic cache (never for a follow-up) -----------------------------------------
     index_id = ""
     embedding: list[float] | None = None
     if cache is not None and settings.cache_enabled and not followup:
         try:
-            embedding = retriever.embed_query(question)
+            with tracing.stage("embed_query"):
+                embedding = retriever.embed_query(question)
             index_id = retriever.index_id()
         except Exception as exc:
             log.warning("cache skipped: could not embed the question", extra={"error": repr(exc)})
         if embedding is not None and index_id:
-            hit = cache.lookup(index_id, embedding)
+            with tracing.stage("cache_lookup"):
+                hit = cache.lookup(index_id, embedding)
             if hit is not None:
                 metrics.record_cache("hit")
+                tracing.note(cache="hit", cache_similarity=round(hit.similarity, 4))
                 response = AskResponse(**hit.payload, request_id=request_id, cached=True)
                 _finish(turns, session_id, question, response, followup)
+                _trace_done(response, settings, provider)
                 log.info("answered", extra=_log_fields(
                     retriever, provider, settings, response, cache_result="hit",
                     similarity=round(hit.similarity, 4), followup=followup,
                     seconds=time.perf_counter() - started))
                 return response
             metrics.record_cache("miss")
+            tracing.note(cache="miss")
         else:
             metrics.record_cache("bypass")
     else:
@@ -130,20 +191,27 @@ def answer_question(
 
     # --- retrieval ----------------------------------------------------------------------
     t0 = time.perf_counter()
-    passages = retriever.retrieve(search_text, k=settings.top_k)
+    with tracing.stage("retrieval"):
+        passages = retriever.retrieve(search_text, k=settings.top_k)
     metrics.RETRIEVAL_SECONDS.observe(time.perf_counter() - t0)
+    _trace_retrieved(passages)
     top_score = max((p.score for p in passages), default=0.0)
     metrics.TOP_SCORE.observe(max(top_score, 0.0))
 
     # --- honest abstention: nothing relevant retrieved -----------------------------------
     if not _is_relevant(question, passages, settings.relevance_floor):
         metrics.ABSTENTIONS.labels(reason="floor").inc()
+        tracing.guardrail("abstain_below_relevance_floor", top_score=round(top_score, 4),
+                          floor=settings.relevance_floor,
+                          reason="no retrieved passage reached the floor and none contains the question's exact terms")
         response = AskResponse(
             request_id=request_id, answer=ABSTAIN_TEXT, citations=[],
             answered_from_context=False, confidence="high", retrieved=_refs(passages),
             provider=provider.name,
         )
         _finish(turns, session_id, question, response, followup)
+        _trace_done(response, settings, provider, abstain_reason="below relevance floor",
+                    top_score=round(top_score, 4))
         log.info("answered", extra=_log_fields(
             retriever, provider, settings, response, cache_result="miss" if embedding else "bypass",
             followup=followup, abstain_reason="below relevance floor",
@@ -152,16 +220,22 @@ def answer_question(
         return response
 
     # --- generation, validation, citation check -----------------------------------------
+    prompt_messages = build_messages(question, passages)   # the text the provider renders: hash + guardrails
+    tracing.note(prompt_hash=tracing.prompt_hash(prompt_messages))
     t0 = time.perf_counter()
-    generation = generate_validated(provider, question, passages)
+    with tracing.stage("generation"):
+        generation = generate_validated(provider, question, passages)
     metrics.GENERATION_SECONDS.labels(provider=provider.name).observe(time.perf_counter() - t0)
     usage = take_usage()
     metrics.TOKENS.labels(direction="input").inc(usage.input_tokens)
     metrics.TOKENS.labels(direction="output").inc(usage.output_tokens)
     if generation.citations_removed:
         metrics.CITATIONS_REMOVED.inc(generation.citations_removed)
+        tracing.guardrail("citations_removed", count=generation.citations_removed,
+                          reason="the model cited a passage that was not in the retrieved evidence")
     if generation.fell_back:
         metrics.FALLBACKS.inc()
+        tracing.guardrail("fallback_answer", reason=generation.error or "model output failed validation twice")
 
     answer: Answer = generation.answer
     citations: list[Citation] = generation.citations or []
@@ -194,6 +268,7 @@ def answer_question(
         cache.store(index_id, question, embedding, _cache_payload(response))
 
     _finish(turns, session_id, question, response, followup)
+    _trace_done(response, settings, provider, attempts=generation.attempts, top_score=round(top_score, 4))
     log.info("answered", extra=_log_fields(
         retriever, provider, settings, response,
         cache_result="miss" if embedding is not None else "bypass", followup=followup,

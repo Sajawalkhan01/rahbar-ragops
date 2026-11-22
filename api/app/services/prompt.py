@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import re
 
+from .. import tracing
 from ..schemas import Answer, Passage
 
 SYSTEM_PROMPT = """You are RAHBAR, a question-answering assistant for university documents.
@@ -55,10 +56,20 @@ _INJECTION = re.compile(
 REMOVED_MARKER = "[removed: instruction-like text found in the document]"
 
 
-def neutralise_injection(text: str) -> str:
-    """Replace instruction-like sentences in retrieved text with a marker."""
-    sentences = re.split(r"(?<=[.!?])\s+", text)
-    return " ".join(REMOVED_MARKER if _INJECTION.search(s) else s for s in sentences)
+def neutralise_injection(text: str, chunk_id: str | None = None) -> str:
+    """Replace instruction-like sentences in retrieved text with a marker.
+
+    Each removal is recorded in the query trace as a guardrail action (Assignment 03, D4)."""
+    out = []
+    for sentence in re.split(r"(?<=[.!?])\s+", text):
+        if _INJECTION.search(sentence):
+            tracing.guardrail("injection_sentence_removed", chunk_id=chunk_id,
+                              sentence=sentence.strip()[:200],
+                              reason="instruction-like text in a retrieved passage matched the injection pattern")
+            out.append(REMOVED_MARKER)
+        else:
+            out.append(sentence)
+    return " ".join(out)
 
 
 def answer_schema() -> dict[str, object]:
@@ -75,7 +86,7 @@ def render_evidence(passages: list[Passage]) -> str:
             f"[{n}] source: {p.source} | section: {p.section} | page: {p.page} | "
             f"version: {p.doc_version or 'unknown'}{flag}"
         )
-        blocks.append(f"{header}\n{neutralise_injection(_FENCE.sub(' ', p.text)).strip()}")
+        blocks.append(f"{header}\n{neutralise_injection(_FENCE.sub(' ', p.text), p.chunk_id).strip()}")
     return "\n\n".join(blocks)
 
 

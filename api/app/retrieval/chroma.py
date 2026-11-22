@@ -31,6 +31,7 @@ from typing import Any
 
 import numpy as np
 
+from .. import tracing
 from ..config import Settings
 from ..schemas import Passage
 from .bm25 import BM25, exact_terms
@@ -57,6 +58,7 @@ class _Snapshot:
     superseded: list[bool]
     superseded_versions: set[str]
     current_versions: set[str]
+    meta: dict[str, Any]
 
 
 class ChromaRetriever:
@@ -105,6 +107,15 @@ class ChromaRetriever:
         meta = self.collection().metadata or {}
         return str(meta.get("index_id", ""))
 
+    def index_info(self) -> dict[str, Any]:
+        """Which collection and embedding version answered (for the query trace)."""
+        meta = self.snapshot().meta
+        return {"collection": self.settings.collection, "index_id": meta.get("index_id", ""),
+                "embed_model": meta.get("embed_model", self.settings.embed_model),
+                "embed_model_version": meta.get("embed_model_version", "unknown"),
+                "collection_version": meta.get("collection_version", self.settings.collection),
+                "chunks": meta.get("chunks")}
+
     def _load(self, collection: Any, index_id: str) -> _Snapshot:
         ids: list[str] = []
         texts: list[str] = []
@@ -130,6 +141,7 @@ class ChromaRetriever:
             superseded=superseded,
             superseded_versions={str(m.get("doc_version", "")) for m, s in zip(metas, superseded) if s},
             current_versions={str(m.get("doc_version", "")) for m, s in zip(metas, superseded) if not s},
+            meta=dict(collection.metadata or {}),
         )
 
     def snapshot(self) -> _Snapshot:
@@ -200,6 +212,11 @@ class ChromaRetriever:
             for rank, chunk_id in enumerate(ranking, start=1):
                 fused[chunk_id] = fused.get(chunk_id, 0.0) + weight / (self.settings.rrf_k + rank)
         best = sorted(fused, key=lambda c: fused[c], reverse=True)[:k]
+        tracing.note(
+            filters=where, include_older_versions=include_old,
+            dense_order=[{"chunk_id": c, "similarity": round(similarity[c], 4)} for c in dense_ids[:k]],
+            fused_order=[{"chunk_id": c, "rrf": round(fused[c], 5)} for c in best],
+        )
 
         # A passage only the keyword search found has no dense distance yet: read its stored
         # vector and compute the cosine, so every score means the same thing.

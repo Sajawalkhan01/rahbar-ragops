@@ -57,6 +57,13 @@ TOP_SCORE = Histogram(
     buckets=(0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0),
 )
 
+STAGE_SECONDS = Histogram(
+    "rahbar_stage_seconds", "Latency of each query-pipeline stage", ["stage"],
+    buckets=(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 90),
+)
+INJECTIONS = Counter("rahbar_injection_flags_total",
+                     "Injection attempts flagged by the guardrails", ["where"])  # question | passage
+
 _hits = 0
 _misses = 0
 
