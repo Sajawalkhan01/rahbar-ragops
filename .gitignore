@@ -31,3 +31,4 @@ htmlcov/
 # A3 runtime state (large; reports are mirrored into eval/results/ingestion/)
 data/
 traces/logs/*.jsonl.tmp
+!.env.example

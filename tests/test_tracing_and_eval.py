@@ -229,3 +229,23 @@ def test_extractive_sentence_splitter_keeps_rupee_amounts_together():
     parts = _sentences("BBA / BS | Rs. 12,000\nFees are paid once. See e.g. the fee page. Done.")
     assert parts[0] == "BBA / BS | Rs. 12,000"
     assert "See e.g. the fee page." in parts
+
+
+# ------------------------------------------------------------------ coverage (Part E tool)
+def test_coverage_counts_covered_queries_groups_gaps_and_sets_exit_semantics():
+    from ragops.evaluation.coverage import compute
+
+    def embed(texts):  # type: ignore[no-untyped-def]
+        return [vector_for(t) for t in texts]
+
+    golden = [{"id": "g1", "question": "What is the tuition fee per credit hour"},
+              {"id": "g2", "question": "How many courses can a student repeat in summer"}]
+    live = [{"id": "l1", "query": "What is the tuition fee per credit hour for BS", "domain": True},
+            {"id": "l2", "query": "How many courses can a student repeat in the summer semester", "domain": True},
+            {"id": "l3", "query": "Where can I park my bike near the library", "domain": False},
+            {"id": "l4", "query": "Where is parking for bikes near the main library", "domain": False}]
+    r = compute(golden, live, embed, threshold=0.6, required_share=0.85, topic_similarity=0.3)
+    assert r["covered"] == 2 and r["uncovered"] == 2 and r["coverage"] == 0.5
+    assert not r["meets_requirement"]                       # below 85%: the CLI would exit 1
+    assert r["uncovered_topics"][0]["size"] == 2            # the two parking queries form one topic
+    assert compute(golden, live[:2], embed, 0.6, 0.85)["meets_requirement"]
