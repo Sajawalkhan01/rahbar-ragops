@@ -103,7 +103,13 @@ class Quarantine:
         return list(active.values())
 
     def blocked(self) -> dict[str, dict[str, Any]]:
-        return {e["sha256"]: e for e in self.entries()}
+        """Files that must not be re-submitted unchanged, keyed by SHA-256.
+
+        A document rejected only as a DUPLICATE is not blocked: its bytes equal the original's, so blocking
+        the hash would also block the original (found by running Batch B, then the incremental demo, in which
+        library-rules.md was skipped because library-rules-copy.md had been quarantined)."""
+        return {e["sha256"]: e for e in self.entries()
+                if not all(c.startswith("duplicate") for c in e["categories"])}
 
     def is_quarantined(self, sha256: str) -> dict[str, Any] | None:
         return self.blocked().get(sha256)
