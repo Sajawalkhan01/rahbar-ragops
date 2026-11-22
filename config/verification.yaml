@@ -1,0 +1,37 @@
+# Part A1 verification thresholds. Read by ragops/ingestion/verification.py.
+# Every number here is a tunable, not a law: each was chosen by running the checks on Batch A
+# (the nine A2 documents, which must all pass) and Batch B (planted problems, which must not).
+mandatory_checks: [quality, completeness, recency, uniqueness]   # a FAIL in any of these quarantines
+quality:
+  min_chars: 200            # fewer extracted characters than this = insufficient content
+  min_words: 40
+  max_replacement_char_share: 0.01   # share of U+FFFD / control characters in the text
+  min_alnum_share: 0.55     # alphanumeric characters / non-space characters
+  max_implausible_token_share: 0.30  # tokens of 6+ letters with no vowel, or symbol soup
+completeness:
+  required_metadata: [source, title]   # plus one of date / doc_version (below)
+  require_date_or_version: true
+  truncation:
+    check_text_end: true     # the text must end like a finished document ...
+    text_end_applies_to: ['.md', '.txt']   # ... for files that are one text stream. Not .html: a web page ends in
+                                           # footer lines (found by running Batch A: fee-structure-page.html)
+    ends_ok: ['.', '!', '?', ')', '"', "'", ']', ':', '|', '*', '%', ';']
+    min_end_words: 4         # only a final line this long can be "cut mid-sentence"
+    declared_pages_tolerance: 0   # a PDF with metadata pages=N must extract exactly N pages
+recency:
+  # An incoming document older than the active version of its family, and not declared
+  # superseded in its own metadata, is a stale re-submission and is rejected.
+  reject_stale_resubmission: true
+uniqueness:
+  exact_hash: true
+  text_hash: true            # same normalised text in a different file/format
+  near_duplicate:
+    enabled: true
+    embedding_threshold: 0.97   # cosine of document-level embeddings
+    require_lexical_confirmation: true   # also needs shingle Jaccard >= lexical_threshold
+    lexical_threshold: 0.60
+    shingle_words: 5
+    windows: 3                # start / middle / end windows embedded per document
+    window_words: 300
+advisories:
+  injection_policy: warn     # warn = index and let the query-time rail neutralise it; quarantine = reject
