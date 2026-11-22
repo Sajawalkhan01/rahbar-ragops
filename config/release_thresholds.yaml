@@ -1,0 +1,15 @@
+# Part C2 release gate. On Kubernetes this exact file is the ConfigMap `release-thresholds`
+# (k8s/configmaps/release-thresholds.yaml), mounted at /config/release_thresholds.yaml, so a
+# threshold is changed with `kubectl edit configmap` and no image rebuild.
+# "vs_baseline" thresholds are deltas against the baseline run; "absolute" ones are floors/ceilings.
+vs_baseline:
+  max_recall5_drop: 0.02        # candidate recall@5 may be at most 2 points below baseline
+  max_mrr_drop: 0.03
+  max_ndcg5_drop: 0.03
+  max_answer_correctness_drop: 0.05
+  min_abstention_delta: 0.0     # abstention correctness must not be lower than baseline
+absolute:
+  min_faithfulness: 0.90        # share of answers whose sentences are supported by the context
+  min_citation_validity: 0.95
+  min_answer_correctness: 0.50
+  max_p95_latency_ms: 2000      # end-to-end p95 for the whole query pipeline

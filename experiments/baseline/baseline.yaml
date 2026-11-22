@@ -1,0 +1,10 @@
+# Baseline = the shipped A2 configuration. The collection is built by the ingestion Job with these chunk
+# settings; the suite records what the collection says it was built with.
+name: baseline
+change: none
+collection: rahbar
+chunk_size: 400
+chunk_overlap: 50
+top_k: 5
+relevance_floor: 0.70
+hybrid: true

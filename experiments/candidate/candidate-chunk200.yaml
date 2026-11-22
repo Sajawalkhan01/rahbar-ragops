@@ -1,0 +1,12 @@
+# Candidate C1 (the one change for Part C): smaller chunks. Hypothesis: 200-word chunks with 25 words of
+# overlap raise precision (less unrelated text per chunk) without losing recall. A2 measured 150/20
+# with recall@3 0.917 (docs/PIPELINE.md), so the risk is a recall drop; the suite measures it.
+# Built into its own collection so baseline and candidate can serve side by side (k8s/README.md).
+name: candidate-chunk200
+change: "chunk size 400 -> 200 words, overlap 50 -> 25"
+collection: rahbar_c200
+chunk_size: 200
+chunk_overlap: 25
+top_k: 5
+relevance_floor: 0.70
+hybrid: true

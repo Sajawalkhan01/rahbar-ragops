@@ -1,0 +1,9 @@
+# A deliberately bad candidate (assignment C2: "a deliberately bad one is fine"): it serves only one
+# passage and sets a relevance floor so high that most answerable questions are declined. It reuses the
+# baseline collection, so it needs no re-ingestion.
+name: candidate-bad
+change: "top_k 5 -> 1 and relevance_floor 0.70 -> 0.90"
+collection: rahbar
+top_k: 1
+relevance_floor: 0.90
+hybrid: true
