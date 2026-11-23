@@ -1,4 +1,9 @@
-"""Builds eval/golden.jsonl.
+"""
+NOTE (Assignment 03, Part E): eval/golden.jsonl is now edited by hand. Questions n01-n06 and the h02 override
+were added directly to the file. Running this script rewrites golden.jsonl from scratch and DROPS them.
+Do not run it unless you re-apply those edits.
+
+Builds eval/golden.jsonl.
 
     python eval/build_golden.py
 
