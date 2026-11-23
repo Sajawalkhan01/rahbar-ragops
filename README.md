@@ -32,7 +32,7 @@ addresses). Examples below use it: `bash scripts/w.sh python -m ...`.
 
 ## The commands, in execution order
 
-**Unit tests (no model, no network):** `bash scripts/w.sh python -m pytest tests -q` (A3, 54 tests) and
+**Unit tests (no model, no network):** `bash scripts/w.sh python -m pytest tests -q` (A3, 55 tests) and
 `cd api && pytest -q`, `cd indexer && pytest -q` (A2, 98 + 77 tests).
 
 **Part A: ingestion.** Stage the batches into inboxes, then ingest (verification runs inside).
