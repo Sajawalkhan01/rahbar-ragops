@@ -1,0 +1,62 @@
+# evidence F7-resource-measurements
+# captured: 2026-11-23T17:49:04Z on SajawalPC
+$ bash scripts/k8s-measure.sh
+== idle
+0cc979888d4f3       api                       0.00                0B                  8.192kB             3                   0B
+157d1ac3adf4c       api                       0.26                90.79MB             12.29kB             4                   0B
+21921dd958302       chroma                    0.47                159MB               12.29kB             4                   0B
+53e07a1a24052       chroma                    0.00                0B                  12.29kB             4                   0B
+562838f33c2a3       api                       0.37                90.13MB             12.29kB             4                   0B
+5b127377a4e10       redis                     8.80                7.365MB             8.192kB             3                   0B
+67071e15ad825       api                       0.28                102.1MB             8.192kB             3                   0B
+6f893e9ce7d05       api                       0.00                0B                  8.192kB             3                   0B
+709a2aa8b01cc       redis                     6.22                6.607MB             8.192kB             3                   0B
+9bf4afc68e255       api                       0.22                84.08MB             8.192kB             3                   0B
+a56ed74080ed8       api                       0.50                84.79MB             12.29kB             4                   0B
+d6781e96806cf       chroma                    1.08                99.65MB             12.29kB             4                   0B
+e3ffe51b1fafd       redis                     0.00                0B                  8.192kB             3                   0B
+f72324a2b7c66       api                       3.25                76.75MB             8.192kB             3                   0B
+sent 30 golden questions in 45.6s
+== right after the load
+0cc979888d4f3       api                       0.00                0B                  8.192kB             3                   0B
+157d1ac3adf4c       api                       0.52                95.59MB             12.29kB             4                   0B
+21921dd958302       chroma                    0.00                159.1MB             12.29kB             4                   0B
+53e07a1a24052       chroma                    0.00                0B                  12.29kB             4                   0B
+562838f33c2a3       api                       0.44                90.13MB             12.29kB             4                   0B
+5b127377a4e10       redis                     2.03                7.655MB             8.192kB             3                   0B
+67071e15ad825       api                       0.63                102.1MB             8.192kB             3                   0B
+6f893e9ce7d05       api                       0.00                0B                  8.192kB             3                   0B
+709a2aa8b01cc       redis                     1.78                6.607MB             8.192kB             3                   0B
+9bf4afc68e255       api                       0.34                84.08MB             8.192kB             3                   0B
+a56ed74080ed8       api                       1.01                84.79MB             12.29kB             4                   0B
+d6781e96806cf       chroma                    0.36                99.65MB             12.29kB             4                   0B
+e3ffe51b1fafd       redis                     0.00                0B                  8.192kB             3                   0B
+f72324a2b7c66       api                       0.45                76.75MB             8.192kB             3                   0B
+== configured requests / limits
+POD                              REQ_CPU   REQ_MEM   LIM_CPU   LIM_MEM
+api-74c947b86f-mcj8d             100m      192Mi     500m      384Mi
+api-74c947b86f-zglzn             100m      192Mi     500m      384Mi
+api-candidate-865876bfb9-jqgx7   100m      192Mi     500m      384Mi
+chroma-0                         100m      256Mi     500m      1Gi
+eval-2tppk                       250m      384Mi     1         768Mi
+eval-candidate-ncz66             250m      384Mi     1         768Mi
+eval-candidate-topk3-mq4pd       250m      384Mi     1         768Mi
+ingest-2q429                     250m      512Mi     1         1536Mi
+ingest-batch-b-bqh8b             250m      512Mi     1         1536Mi
+ingest-candidate-hzbkx           250m      512Mi     1         1536Mi
+loader                           10m       32Mi      200m      128Mi
+redis-b868cbb67-49475            50m       64Mi      200m      128Mi
+== OOMKilled / restarts
+api-74c947b86f-mcj8d restarts=0 lastState=
+api-74c947b86f-zglzn restarts=0 lastState=
+api-candidate-865876bfb9-jqgx7 restarts=0 lastState=
+chroma-0 restarts=0 lastState=
+eval-2tppk restarts=0 lastState=
+eval-candidate-ncz66 restarts=0 lastState=
+eval-candidate-topk3-mq4pd restarts=0 lastState=
+ingest-2q429 restarts=0 lastState=
+ingest-batch-b-bqh8b restarts=0 lastState=
+ingest-candidate-hzbkx restarts=0 lastState=
+loader restarts=0 lastState=
+redis-b868cbb67-49475 restarts=0 lastState=
+# exit code: 0

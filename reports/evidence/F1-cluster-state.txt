@@ -1,0 +1,53 @@
+# evidence F1-cluster-state
+# captured: 2026-11-23T17:29:16Z on SajawalPC
+$ kubectl get all,pvc,configmap,cronjob,job -n ragops
+NAME                                 READY   STATUS      RESTARTS   AGE
+pod/api-bbdb6967-4vpq5               1/1     Running     0          71m
+pod/api-bbdb6967-hlhmm               1/1     Running     0          71m
+pod/api-candidate-865876bfb9-jqgx7   1/1     Running     0          71m
+pod/chroma-0                         1/1     Running     0          71m
+pod/eval-2tppk                       0/1     Completed   0          33m
+pod/eval-candidate-topk3-mq4pd       0/1     Completed   0          7m34s
+pod/eval-candidate-vfmds             0/1     Error       0          7m34s
+pod/ingest-2q429                     0/1     Completed   0          61m
+pod/ingest-candidate-hzbkx           0/1     Completed   0          33m
+pod/loader                           0/1     Completed   0          63m
+pod/redis-b868cbb67-49475            1/1     Running     0          71m
+
+NAME                    TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/api             ClusterIP   10.111.74.104    <none>        8000/TCP   71m
+service/api-candidate   ClusterIP   10.105.8.62      <none>        8000/TCP   71m
+service/chroma          ClusterIP   10.102.7.235     <none>        8000/TCP   71m
+service/redis           ClusterIP   10.106.234.104   <none>        6379/TCP   71m
+
+NAME                            READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api             2/2     2            2           71m
+deployment.apps/api-candidate   1/1     1            1           71m
+deployment.apps/redis           1/1     1            1           71m
+
+NAME                                       DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-bbdb6967               2         2         2       71m
+replicaset.apps/api-candidate-865876bfb9   1         1         1       71m
+replicaset.apps/redis-b868cbb67            1         1         1       71m
+
+NAME                      READY   AGE
+statefulset.apps/chroma   1/1     71m
+
+NAME                             STATUS     COMPLETIONS   DURATION   AGE
+job.batch/eval                   Complete   1/1           25m        33m
+job.batch/eval-candidate         Failed     0/1           7m34s      7m35s
+job.batch/eval-candidate-topk3   Complete   1/1           6m58s      7m34s
+job.batch/ingest                 Complete   1/1           28m        61m
+job.batch/ingest-candidate       Complete   1/1           23m        33m
+
+NAME                                   STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/data-chroma-0    Bound    pvc-e0dd5c3b-205e-4738-b7bc-a50604e05364   2Gi        RWO            standard       <unset>                 71m
+persistentvolumeclaim/ragops-data      Bound    pvc-b6c51a83-092c-4bb2-ba48-5106310dc8db   3Gi        RWO            standard       <unset>                 71m
+persistentvolumeclaim/ragops-results   Bound    pvc-cf37241a-4f95-411a-b37d-b1e6d4d7384c   500Mi      RWO            standard       <unset>                 71m
+persistentvolumeclaim/ragops-traces    Bound    pvc-fe5c68fa-51bd-4ed6-b6cb-a0149dfb1ba5   500Mi      RWO            standard       <unset>                 71m
+
+NAME                           DATA   AGE
+configmap/kube-root-ca.crt     1      71m
+configmap/ragops-config        23     71m
+configmap/release-thresholds   1      71m
+# exit code: 0

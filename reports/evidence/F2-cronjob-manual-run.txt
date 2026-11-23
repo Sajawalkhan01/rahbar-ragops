@@ -1,0 +1,11 @@
+# evidence F2-cronjob-manual-run
+# captured: 2026-11-23T17:52:18Z on SajawalPC
+$ kubectl get cronjob ingest-cron -n ragops; kubectl create job ingest-cron-manual --from=cronjob/ingest-cron -n ragops; kubectl wait --for=condition=complete job/ingest-cron-manual -n ragops --timeout=300s; kubectl logs job/ingest-cron-manual -n ragops | tail -3 | cut -c1-300
+NAME          SCHEDULE      TIMEZONE   SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+ingest-cron   0 */6 * * *   <none>     False     0        <none>          66s
+job.batch/ingest-cron-manual created
+job.batch/ingest-cron-manual condition met
+{"ts": "2026-11-23T17:52:59Z", "logger": "ragops.ingest", "msg": "ingest start", "run_id": "20261123T175259Z-cron", "inbox": "/data/inbox/incoming", "documents": 1, "unchanged": 1, "to_verify": 0, "collection": "rahbar"}
+{"ts": "2026-11-23T17:52:59Z", "logger": "ragops.ingest", "msg": "ingest finished", "run_id": "20261123T175259Z-cron", "documents_seen": 1, "chunks_embedded": 0, "chunks_in_collection": 627, "index_changed": false, "seconds": 0.31}
+{"run_id": "20261123T175259Z-cron", "documents_seen": 1, "chunks_embedded": 0, "chunks_in_collection": 627, "index_changed": false}
+# exit code: 0

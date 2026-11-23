@@ -18,13 +18,13 @@ Project is symlinked in WSL as `~/ragops`.
 | # | Phase | Status |
 | --- | --- | --- |
 | 0 | Inspect workspace, extract ZIP, analyse A2 | DONE |
-| 1 | Part A ingestion: verification, quarantine, incremental, versioning, Batch B | TODO |
-| 2 | Part B eval: golden.jsonl, embedding/retrieval/generation eval, run-twice | TODO |
-| 3 | Part C experiment + release gate | TODO |
-| 4 | Part D tracing, inspector, metrics, guardrail log, RCA | TODO |
-| 5 | Part E coverage + drift | TODO |
-| 6 | Part F Kubernetes (minikube) deploy, jobs, release, rollback | TODO |
-| 7 | Part G report PDF + evidence | TODO |
-| 8 | README, FINAL_COMPLETION_REPORT, final test run | TODO |
+| 1 | Part A ingestion: verification, quarantine, incremental, versioning, Batch B | DONE (verified, real Chroma + Ollama) |
+| 2 | Part B eval: golden.jsonl, embedding/retrieval/generation eval, run-twice | DONE (member 2 confirms labels, hand review) |
+| 3 | Part C experiment + release gate | DONE |
+| 4 | Part D tracing, inspector, metrics, guardrail log, RCA | DONE except D5 write-up (member 2) |
+| 5 | Part E coverage + drift | drift run DONE; coverage code DONE; live queries and new golden questions PENDING (member 2) |
+| 6 | Part F Kubernetes (minikube) deploy, jobs, release, rollback | DONE with gaps listed in k8s/README.md |
+| 7 | Part G report PDF + evidence | machinery DONE; text, screenshots PENDING (group) |
+| 8 | README, FINAL_COMPLETION_REPORT, final test run | DONE (55 tests pass); final check after member 2 merges PENDING |
 
 (Update the table as phases complete.)

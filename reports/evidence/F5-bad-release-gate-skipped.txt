@@ -1,0 +1,39 @@
+# evidence F5-bad-release-gate-skipped
+# captured: 2026-11-23T17:40:48Z on SajawalPC
+$ bash scripts/k8s-release-demo.sh bad
+deployment.apps/api env updated
+deployment.apps/api annotated
+Waiting for deployment spec update to be observed...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+api    2/2     2            2           86m
+deployment.apps/api 
+REVISION  CHANGE-CAUSE
+1         baseline: collection rahbar (chunks 400/50)
+2         release candidate-topk3 (gate PASS): TOP_K 5 -> 3
+3         BAD release, gate skipped: collection rahbar_c200, TOP_K=1, RELEVANCE_FLOOR=0.90
+
+--- POST /api/ask: What minimum CGPA must an undergraduate keep to avoid academic warning?
+answered_from_context: True
+answer: 5.4 Minimum CGPA required to avoid academic warning is 2.00 for all undergraduate programs. 5.5 If at the end of a semester (including summer semester) CGPA drops below 2.00, warning is issued, and warning count is incremented by one. 5.6 If CGPA remains below 2.00 for 3 consecutive semesters, warni
+trace_id: None | citations: 1
+--- newest trace line from the API pod (collection / embedding version actually used)
+{
+ "trace_id": "e0a63ae562064c6882b33f0e13a8878e",
+ "query": "What minimum CGPA must an undergraduate keep to avoid academic warning?",
+ "collection": "rahbar_c200",
+ "collection_version": "rahbar_c200",
+ "embedding_model": "nomic-embed-text",
+ "embedding_model_version": "0a109f422b47",
+ "index_id": "b5b904abf0024461be25f6d49c9da9c0",
+ "top_score": 0.8806,
+ "guardrails": []
+}
+# exit code: 0

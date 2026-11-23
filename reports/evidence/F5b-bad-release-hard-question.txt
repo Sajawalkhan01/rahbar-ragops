@@ -1,0 +1,27 @@
+# evidence F5b-bad-release-hard-question
+# captured: 2026-11-23T17:44:35Z on SajawalPC
+$ bash scripts/k8s-release-demo.sh ask
+--- POST /api/ask: What is the last day to withdraw from a course under the 2026 rules, and what does the fee page charge for a withdrawal after the second week?
+answered_from_context: False
+answer: The documents in this corpus do not cover that question, so I cannot answer it. Try rephrasing it, or ask about the academic rules, fees, grading, the student handbook or the annual reports.
+trace_id: None | citations: 0
+--- newest trace line from the API pod (collection / embedding version actually used)
+{
+ "trace_id": "ffeb27ce60694027959ebd416e352970",
+ "query": "What is the last day to withdraw from a course under the 2026 rules, and what does the fee page charge for a withdrawal after the second week?",
+ "collection": "rahbar_c200",
+ "collection_version": "rahbar_c200",
+ "embedding_model": "nomic-embed-text",
+ "embedding_model_version": "0a109f422b47",
+ "index_id": "b5b904abf0024461be25f6d49c9da9c0",
+ "top_score": 0.7384,
+ "guardrails": [
+  {
+   "action": "abstain_below_relevance_floor",
+   "top_score": 0.7384,
+   "floor": 0.9,
+   "reason": "no retrieved passage reached the floor and none contains the question's exact terms"
+  }
+ ]
+}
+# exit code: 0

@@ -38,7 +38,7 @@ Last updated: see git log. Rows owned by the second group member are marked (mem
 | --- | --- | --- | --- | --- |
 | C1 one change, suite on baseline and candidate, all three levels compared | `experiments/baseline`, `experiments/candidate/*.yaml` | suite results | `eval/results/suite-*` | see results |
 | C2 thresholds in a config file; script applies gate, exit code; one failing, one passing | `config/release_thresholds.yaml`, `ragops/gate.py`, `experiments/release_gate.py` | `tests/test_tracing_and_eval.py` gate tests; real runs | gate output files | failing PASS; passing see results |
-| C3 roll-out / rollback on Kubernetes | see F3 | | | PENDING |
+| C3 roll-out / rollback on Kubernetes | see F3 | | `F4`-`F6` | PASS |
 
 ## Part D: observability
 
@@ -56,19 +56,19 @@ Last updated: see git log. Rows owned by the second group member are marked (mem
 | --- | --- | --- |
 | E1 >= 40 live queries (28 in-domain, 12 uncovered) | `eval/live_queries/` | PENDING (member 2) |
 | E2 coverage vs golden set, threshold justified, uncovered topics | `ragops/evaluation/coverage.py` (code by member 1) | code PENDING, data PENDING |
-| E3 ingest Batch B, re-run suite, report what changed and why | suite `--state AB`; golden `after_batch_b` | run PENDING |
+| E3 ingest Batch B, re-run suite, report what changed and why | suite `--state AB`; golden `after_batch_b` | PASS: `eval/results/DRIFT-A-vs-AB.md` (golden h02 label needs an `after_batch_b` override: member 2) |
 | E4 >= 6 new golden questions, coverage rises, non-zero exit below threshold | `coverage.py` exit code | PENDING (member 2) |
 
 ## Part F: Kubernetes
 
 | Req | Implementation | Status |
 | --- | --- | --- |
-| F1 API Deployment, vector store StatefulSet, Service, PVC for data lake, quarantine, archive | `k8s/40-api.yaml`, `30-chroma.yaml`, `10-storage.yaml` | manifests written; deployment PENDING |
-| F2 ingestion Job + CronJob (only writer); eval Job exits non-zero on gate fail; thresholds in ConfigMap | `k8s/ingest-job.yaml`, `ingest-cronjob.yaml`, `eval-job.yaml`, `jobs/eval-candidate*.yaml`, `20-configmaps.yaml` | PENDING |
-| F3 candidate Deployment + Service + own collection; rolling update `maxUnavailable: 0`; rollout status; gate-stopped candidate; bad release undone; trace after undo shows previous collection | `k8s/41-api-candidate.yaml`, `40-api.yaml` | PENDING |
-| F4 traces to stdout and volume; metrics via port-forward | `api/app/tracing.py`, `routes/metrics.py` | PENDING (cluster) |
-| F5 resource requests/limits from measurements | manifests | PENDING (measure) |
-| k8s/README.md with all commands | `k8s/README.md` | PENDING |
+| F1 API Deployment, vector store StatefulSet, Service, PVC for data lake, quarantine, archive | `k8s/40-api.yaml`, `30-chroma.yaml`, `10-storage.yaml` | PASS (deployed on minikube; `reports/evidence/F1-cluster-state.txt`) |
+| F2 ingestion Job + CronJob (only writer); eval Job exits non-zero on gate fail; thresholds in ConfigMap | `k8s/ingest-job.yaml`, `ingest-cronjob.yaml`, `eval-job.yaml`, `jobs/eval-candidate*.yaml`, `20-configmaps.yaml` | PASS: Batch A/B and candidate ingested by Jobs, CronJob run by hand (0 chunks on unchanged input), baseline + 2 candidate evals, gate FAIL exits non-zero (Job Failed), threshold edit in the ConfigMap flipped the verdict (`F2-*`, `F3-*`). `eval-candidate-bad` manifest not run in cluster. No concurrent-writer test in cluster. |
+| F3 candidate Deployment + Service + own collection; rolling update `maxUnavailable: 0`; rollout status; gate-stopped candidate; bad release undone; trace after undo shows previous collection | `k8s/41-api-candidate.yaml`, `40-api.yaml` | PASS (`F4`-`F6`): rolling update with `maxUnavailable: 0`, rollout status/history, gate-failed candidate not promoted, bad release reversed with `rollout undo`, new trace shows `collection: rahbar` and the embedding version again |
+| F4 traces to stdout and volume; metrics via port-forward | `api/app/tracing.py`, `routes/metrics.py` | PASS: traces on stdout (read with `kubectl logs`) and on the traces PVC (copied to `traces/logs/k8s`); /metrics exists, port-forward command in `k8s/README.md` (scrape not captured as evidence) |
+| F5 resource requests/limits from measurements | manifests | PARTIAL: API/Chroma/Redis measured with `crictl stats` (metrics-server broken here); Job peaks not measured (`F7`) |
+| k8s/README.md with all commands | `k8s/README.md` | PASS |
 
 ## Part G and submission
 
