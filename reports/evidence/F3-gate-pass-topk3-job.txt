@@ -1,0 +1,19 @@
+# evidence F3-gate-pass-topk3-job
+# captured: 2026-11-23T17:29:20Z on SajawalPC
+$ kubectl get job eval-candidate-topk3 -n ragops; kubectl logs job/eval-candidate-topk3 -n ragops | grep -A14 "RELEASE GATE"
+NAME                   STATUS     COMPLETIONS   DURATION   AGE
+eval-candidate-topk3   Complete   1/1           6m58s      7m36s
+RELEASE GATE   baseline=baseline   candidate=candidate-topk3
+rule                                    candidate            need  result   detail
+recall@5 vs baseline                        0.913        >= 0.893  PASS     baseline 0.9130, may drop at most 0.02
+MRR vs baseline                            0.8551       >= 0.8251  PASS     baseline 0.8551, may drop at most 0.03
+nDCG@5 vs baseline                         0.8606       >= 0.8306  PASS     baseline 0.8606, may drop at most 0.03
+answer correctness vs baseline             0.6087       >= 0.5587  PASS     baseline 0.6087, may drop at most 0.05
+abstention correctness vs baseline            1.0          >= 1.0  PASS     baseline 1.0000, must not be lower
+faithfulness                                  1.0          >= 0.9  PASS     absolute floor
+citation validity                             1.0         >= 0.95  PASS     absolute floor
+answer correctness                         0.6087          >= 0.5  PASS     absolute floor
+p95 latency (ms)                          486.608         <= 2000  PASS     absolute ceiling
+
+GATE: PASS - release allowed
+# exit code: 0

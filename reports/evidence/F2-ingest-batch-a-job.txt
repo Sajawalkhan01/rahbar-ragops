@@ -1,0 +1,10 @@
+# evidence F2-ingest-batch-a-job
+# captured: 2026-11-23T17:29:21Z on SajawalPC
+$ kubectl get job ingest -n ragops; kubectl logs job/ingest -n ragops | tail -4 | cut -c1-300
+NAME     STATUS     COMPLETIONS   DURATION   AGE
+ingest   Complete   1/1           28m        61m
+{"ts": "2026-11-23T16:54:30Z", "logger": "ragops.ingest", "msg": "indexed", "doc": "prospectus-2026-academic-rules-and-regulations.pdf", "chunks": 22, "embedded": 22, "reused": 0, "stale_deleted": 0, "status": "active"}
+{"ts": "2026-11-23T16:55:02Z", "logger": "ragops.ingest", "msg": "indexed", "doc": "faculty-entrepreneurship-and-technical-start-ups-policy.pdf", "chunks": 10, "embedded": 10, "reused": 0, "stale_deleted": 0, "status": "active"}
+{"ts": "2026-11-23T16:55:05Z", "logger": "ragops.ingest", "msg": "ingest finished", "run_id": "20261123T162807Z-k8s", "documents_seen": 9, "chunks_embedded": 601, "chunks_in_collection": 601, "index_changed": true, "seconds": 1616.85}
+{"run_id": "20261123T162807Z-k8s", "documents_seen": 9, "chunks_embedded": 601, "chunks_in_collection": 601, "index_changed": true}
+# exit code: 0

@@ -1,0 +1,26 @@
+# A throw-away pod that mounts the results and traces volumes read-only, so result files and traces can be
+# copied out with `kubectl cp` (the Jobs write to the volumes; nothing else can see them).
+#   kubectl apply -f k8s/jobs/results-reader.yaml && kubectl wait --for=condition=Ready pod/results-reader -n ragops
+#   kubectl cp ragops/results-reader:/results eval/results/k8s     kubectl cp ragops/results-reader:/traces traces/logs/k8s
+apiVersion: v1
+kind: Pod
+metadata: {name: results-reader, namespace: ragops, labels: {app: results-reader}}
+spec:
+  restartPolicy: Never
+  enableServiceLinks: false
+  automountServiceAccountToken: false
+  securityContext: {runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001}
+  containers:
+    - name: reader
+      image: ragops:v1
+      imagePullPolicy: IfNotPresent
+      command: ["sleep", "3600"]
+      resources:
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {cpu: 200m, memory: 128Mi}
+      volumeMounts:
+        - {name: results, mountPath: /results, readOnly: true}
+        - {name: traces, mountPath: /traces, readOnly: true}
+  volumes:
+    - {name: results, persistentVolumeClaim: {claimName: ragops-results}}
+    - {name: traces, persistentVolumeClaim: {claimName: ragops-traces}}
