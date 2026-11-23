@@ -4,10 +4,11 @@
 # configuration defaults (config/) and the evaluation data (eval/, experiments/). Nothing secret and no
 # corpus is baked in: documents arrive on the data volume, thresholds arrive from a ConfigMap.
 FROM python:3.12.11-slim-bookworm AS build
-ENV PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_DEFAULT_TIMEOUT=120 PIP_RETRIES=10
 RUN python -m venv /opt/venv
 COPY requirements.txt /tmp/requirements.txt
-RUN /opt/venv/bin/pip install -r /tmp/requirements.txt
+# the cache mount keeps downloaded wheels outside the image, so a retry after a network timeout resumes
+RUN --mount=type=cache,target=/root/.cache/pip /opt/venv/bin/pip install -r /tmp/requirements.txt
 
 FROM python:3.12.11-slim-bookworm
 ENV PATH=/opt/venv/bin:$PATH PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 \
