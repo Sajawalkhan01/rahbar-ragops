@@ -32,8 +32,10 @@ spec:
           volumeMounts:
             - {name: data, mountPath: /data}
             - {name: results, mountPath: /results}
+            - {name: traces, mountPath: /traces}
             - {name: tmp, mountPath: /tmp}
       volumes:
         - {name: data, persistentVolumeClaim: {claimName: ragops-data}}
         - {name: results, persistentVolumeClaim: {claimName: ragops-results}}
         - {name: tmp, emptyDir: {sizeLimit: 1Gi}}
+        - {name: traces, emptyDir: {sizeLimit: 50Mi}}   # ingestion writes no traces; Paths.ensure() only needs the folder to exist
