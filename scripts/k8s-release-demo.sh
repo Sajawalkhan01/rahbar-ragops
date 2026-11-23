@@ -20,7 +20,7 @@ ask() {
 }
 show_trace() {
   echo "--- newest trace line from the API pod (collection / embedding version actually used)"
-  kubectl logs -n $NS deploy/api --tail=400 | grep '"type": "trace"' | tail -1 \
+  kubectl logs -n $NS -l app=api --tail=400 --max-log-requests=5 | grep '"type": "trace"' | tail -1 \
     | python3 -c "import json,sys; t=json.loads(sys.stdin.readline()); print(json.dumps({k:t.get(k) for k in ('trace_id','query','collection','collection_version','embedding_model','embedding_model_version','index_id','top_score','guardrails')}, indent=1))"
 }
 status() { kubectl rollout status deployment/api -n $NS --timeout=240s; kubectl get deploy api -n $NS; kubectl rollout history deployment/api -n $NS; }

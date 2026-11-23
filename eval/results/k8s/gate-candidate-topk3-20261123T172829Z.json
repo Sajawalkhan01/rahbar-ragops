@@ -1,0 +1,118 @@
+{
+ "passed": true,
+ "baseline_label": "baseline",
+ "candidate_label": "candidate-topk3",
+ "baseline_metrics": {
+  "recall@3": 0.913,
+  "recall@5": 0.913,
+  "mrr": 0.8551,
+  "ndcg@5": 0.8606,
+  "faithfulness": 1.0,
+  "answer_correctness": 0.6087,
+  "citation_validity": 1.0,
+  "abstention_correctness": 1.0,
+  "p50_ms": 695.84,
+  "p95_ms": 4397.6
+ },
+ "candidate_metrics": {
+  "recall@3": 0.913,
+  "recall@5": 0.913,
+  "mrr": 0.8551,
+  "ndcg@5": 0.8606,
+  "faithfulness": 1.0,
+  "answer_correctness": 0.6087,
+  "citation_validity": 1.0,
+  "abstention_correctness": 1.0,
+  "p50_ms": 116.62,
+  "p95_ms": 486.608
+ },
+ "thresholds": {
+  "vs_baseline": {
+   "max_recall5_drop": 0.02,
+   "max_mrr_drop": 0.03,
+   "max_ndcg5_drop": 0.03,
+   "max_answer_correctness_drop": 0.05,
+   "min_abstention_delta": 0.0
+  },
+  "absolute": {
+   "min_faithfulness": 0.9,
+   "min_citation_validity": 0.95,
+   "min_answer_correctness": 0.5,
+   "max_p95_latency_ms": 2000
+  }
+ },
+ "rules": [
+  {
+   "rule": "recall@5 vs baseline",
+   "value": 0.913,
+   "op": ">=",
+   "limit": 0.893,
+   "passed": true,
+   "detail": "baseline 0.9130, may drop at most 0.02"
+  },
+  {
+   "rule": "MRR vs baseline",
+   "value": 0.8551,
+   "op": ">=",
+   "limit": 0.8251,
+   "passed": true,
+   "detail": "baseline 0.8551, may drop at most 0.03"
+  },
+  {
+   "rule": "nDCG@5 vs baseline",
+   "value": 0.8606,
+   "op": ">=",
+   "limit": 0.8306,
+   "passed": true,
+   "detail": "baseline 0.8606, may drop at most 0.03"
+  },
+  {
+   "rule": "answer correctness vs baseline",
+   "value": 0.6087,
+   "op": ">=",
+   "limit": 0.5587,
+   "passed": true,
+   "detail": "baseline 0.6087, may drop at most 0.05"
+  },
+  {
+   "rule": "abstention correctness vs baseline",
+   "value": 1.0,
+   "op": ">=",
+   "limit": 1.0,
+   "passed": true,
+   "detail": "baseline 1.0000, must not be lower"
+  },
+  {
+   "rule": "faithfulness",
+   "value": 1.0,
+   "op": ">=",
+   "limit": 0.9,
+   "passed": true,
+   "detail": "absolute floor"
+  },
+  {
+   "rule": "citation validity",
+   "value": 1.0,
+   "op": ">=",
+   "limit": 0.95,
+   "passed": true,
+   "detail": "absolute floor"
+  },
+  {
+   "rule": "answer correctness",
+   "value": 0.6087,
+   "op": ">=",
+   "limit": 0.5,
+   "passed": true,
+   "detail": "absolute floor"
+  },
+  {
+   "rule": "p95 latency (ms)",
+   "value": 486.608,
+   "op": "<=",
+   "limit": 2000,
+   "passed": true,
+   "detail": "absolute ceiling"
+  }
+ ]
+}
