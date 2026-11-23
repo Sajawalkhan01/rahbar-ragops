@@ -1,0 +1,191 @@
+{
+ "run_id": "20261122T172734Z-demo1",
+ "timestamp": "2026-11-22T17:27:49Z",
+ "inbox": "data/inbox/demo",
+ "summary": {
+  "pass": 4,
+  "fail": 0
+ },
+ "documents": [
+  {
+   "doc_id": "library-rules",
+   "doc_name": "library-rules.md",
+   "title": "University Library Borrowing Rules",
+   "verified_at": "2026-11-22T17:27:36Z",
+   "file_sha256": "26162552f0c9b1a5717c9bd065d8223b407afedd9f4908e41e6487de9b70620e",
+   "checks": {
+    "quality": {
+     "status": "PASS",
+     "reason": "705 characters, 128 words, readable",
+     "details": [],
+     "metrics": {
+      "chars": 705,
+      "words": 128
+     }
+    },
+    "completeness": {
+     "status": "PASS",
+     "reason": "required metadata present, text complete",
+     "details": [],
+     "page_count": 1
+    },
+    "recency": {
+     "status": "PASS",
+     "reason": "no other version of this document family",
+     "details": [],
+     "supersedes": [],
+     "superseded_by": []
+    },
+    "uniqueness": {
+     "status": "PASS",
+     "reason": "unique: no exact or near duplicate",
+     "details": []
+    }
+   },
+   "overall": "PASS",
+   "failure_reasons": [],
+   "categories": [],
+   "recommended_action": "Index.",
+   "disposition": "index",
+   "advisories": [],
+   "supersedes": [],
+   "superseded_by": [],
+   "seconds": 1.26
+  },
+  {
+   "doc_id": "examination-rules-faq",
+   "doc_name": "examination-rules-faq.md",
+   "title": "Examination Rules - Frequently Asked Questions",
+   "verified_at": "2026-11-22T17:27:37Z",
+   "file_sha256": "9c9d5688835ae4abd3ee001ab550eebf3620165538046056e08bf7c3f4d52578",
+   "checks": {
+    "quality": {
+     "status": "PASS",
+     "reason": "911 characters, 155 words, readable",
+     "details": [],
+     "metrics": {
+      "chars": 911,
+      "words": 155
+     }
+    },
+    "completeness": {
+     "status": "PASS",
+     "reason": "required metadata present, text complete",
+     "details": [],
+     "page_count": 1
+    },
+    "recency": {
+     "status": "PASS",
+     "reason": "no other version of this document family",
+     "details": [],
+     "supersedes": [],
+     "superseded_by": []
+    },
+    "uniqueness": {
+     "status": "PASS",
+     "reason": "unique: no exact or near duplicate",
+     "details": []
+    }
+   },
+   "overall": "PASS",
+   "failure_reasons": [],
+   "categories": [],
+   "recommended_action": "Index.",
+   "disposition": "index",
+   "advisories": [],
+   "supersedes": [],
+   "superseded_by": [],
+   "seconds": 1.264
+  },
+  {
+   "doc_id": "fee-structure-2026-27",
+   "doc_name": "fee-structure-2026-27.md",
+   "title": "Fee Structure 2026-27",
+   "verified_at": "2026-11-22T17:27:39Z",
+   "file_sha256": "75ecd580dc0704f0585a3255f02119b61e3a5f5cf23517ad707e58a9071b301f",
+   "checks": {
+    "quality": {
+     "status": "PASS",
+     "reason": "966 characters, 163 words, readable",
+     "details": [],
+     "metrics": {
+      "chars": 966,
+      "words": 163
+     }
+    },
+    "completeness": {
+     "status": "PASS",
+     "reason": "required metadata present, text complete",
+     "details": [],
+     "page_count": 1
+    },
+    "recency": {
+     "status": "PASS",
+     "reason": "no other version of this document family",
+     "details": [],
+     "supersedes": [],
+     "superseded_by": []
+    },
+    "uniqueness": {
+     "status": "PASS",
+     "reason": "unique: no exact or near duplicate",
+     "details": []
+    }
+   },
+   "overall": "PASS",
+   "failure_reasons": [],
+   "categories": [],
+   "recommended_action": "Index.",
+   "disposition": "index",
+   "advisories": [],
+   "supersedes": [],
+   "superseded_by": [],
+   "seconds": 1.999
+  },
+  {
+   "doc_id": "course-withdrawal-guide",
+   "doc_name": "course-withdrawal-guide.md",
+   "title": "Course Withdrawal and Semester Freeze Guide",
+   "verified_at": "2026-11-22T17:27:40Z",
+   "file_sha256": "71e4ee11a0909e20cb54fa4130d1b0ff9b016f5353b76d1dadd6a1537e1ef08a",
+   "checks": {
+    "quality": {
+     "status": "PASS",
+     "reason": "755 characters, 137 words, readable",
+     "details": [],
+     "metrics": {
+      "chars": 755,
+      "words": 137
+     }
+    },
+    "completeness": {
+     "status": "PASS",
+     "reason": "required metadata present, text complete",
+     "details": [],
+     "page_count": 1
+    },
+    "recency": {
+     "status": "PASS",
+     "reason": "no other version of this document family",
+     "details": [],
+     "supersedes": [],
+     "superseded_by": []
+    },
+    "uniqueness": {
+     "status": "PASS",
+     "reason": "unique: no exact or near duplicate",
+     "details": []
+    }
+   },
+   "overall": "PASS",
+   "failure_reasons": [],
+   "categories": [],
+   "recommended_action": "Index.",
+   "disposition": "index",
+   "advisories": [],
+   "supersedes": [],
+   "superseded_by": [],
+   "seconds": 1.071
+  }
+ ]
+}

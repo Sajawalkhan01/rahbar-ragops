@@ -160,6 +160,15 @@ def test_resubmitted_quarantined_file_is_skipped_until_released(env):
     assert path.exists()
 
 
+def test_quarantining_a_duplicate_does_not_block_the_original(env):
+    original = write_md(env.inbox, "lib.md", body("library"))
+    shutil.copy(original, env.inbox / "lib-copy.md")
+    env.run()                                           # lib.md indexed, lib-copy.md quarantined
+    env.settings = IndexerSettings("fake", "x", 0, "other", "x", 60, 10, "x")
+    _, rep, rec = env.run()
+    assert rep["new"] == ["lib.md"] and rep["skipped_previously_quarantined"] == []
+
+
 # ------------------------------------------------------------------ incremental scenarios
 def test_unchanged_rerun_embeds_zero_chunks(env):
     write_md(env.inbox, "a.md", body("alpha"))

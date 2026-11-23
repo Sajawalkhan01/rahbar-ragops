@@ -1,0 +1,30 @@
+{
+ "run_id": "20261122T172734Z-demo1",
+ "timestamp": "2026-11-22T17:27:49Z",
+ "inbox": "data/inbox/demo",
+ "origin": "demo",
+ "collection": "rahbar_demo",
+ "embed_model": "nomic-embed-text",
+ "embed_model_version": "0a109f422b47",
+ "chunk_size": 400,
+ "chunk_overlap": 50,
+ "documents_seen": 4,
+ "unchanged": [],
+ "new": [
+  "library-rules.md",
+  "examination-rules-faq.md",
+  "fee-structure-2026-27.md",
+  "course-withdrawal-guide.md"
+ ],
+ "changed": [],
+ "deleted": [],
+ "quarantined": [],
+ "skipped_previously_quarantined": [],
+ "archived_superseded_versions": [],
+ "chunks_embedded": 15,
+ "document_embeddings_for_near_duplicate_check": 4,
+ "chunks_in_collection": 15,
+ "orphan_chunk_counts_after_delete": {},
+ "index_changed": true,
+ "seconds": 14.15
+}

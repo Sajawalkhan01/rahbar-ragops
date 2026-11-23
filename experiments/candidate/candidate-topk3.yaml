@@ -1,0 +1,9 @@
+# Candidate C2: serve three passages to the generator instead of five (A2's dev overlay already ran with 3 to save
+# prompt tokens on CPU). Hypothesis: less context per answer, lower latency and fewer distracting passages,
+# with retrieval quality unchanged. Same collection as the baseline, so no re-ingestion is needed.
+name: candidate-topk3
+change: "top_k 5 -> 3"
+collection: rahbar
+top_k: 3
+relevance_floor: 0.70
+hybrid: true

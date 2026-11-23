@@ -1,0 +1,54 @@
+# evidence A2-incremental-demo
+# captured: 2026-11-22T17:27:26Z on SajawalPC
+$ bash scripts/demo-incremental.sh
+
+=== 1. first ingestion of 4 documents
+{"run_id": "20261122T172734Z-demo1", "documents_seen": 4, "chunks_embedded": 15, "chunks_in_collection": 15, "index_changed": true}
+    course-withdrawal-guide      active    superseded=False  chunks=3
+    examination-rules-faq        active    superseded=False  chunks=4
+    fee-structure-2026-27        active    superseded=False  chunks=5
+    library-rules                active    superseded=False  chunks=3
+
+=== 2. same inbox again, nothing changed: expect chunks_embedded 0
+{"run_id": "20261122T172756Z-demo2", "documents_seen": 4, "chunks_embedded": 0, "chunks_in_collection": 15, "index_changed": false}
+
+=== 3. modify ONE document (exam FAQ: ten -> fifteen minutes): only its changed chunk is embedded
+{"run_id": "20261122T172800Z-demo3", "documents_seen": 4, "chunks_embedded": 1, "chunks_in_collection": 15, "index_changed": true}
+
+=== 4. add a completely NEW document (scholarship policy): only it is indexed
+{"run_id": "20261122T172808Z-demo4", "documents_seen": 5, "chunks_embedded": 4, "chunks_in_collection": 19, "index_changed": true}
+
+=== 5. delete a document (library rules): its chunks must be gone, no orphans
+{"run_id": "20261122T172820Z-demo5", "documents_seen": 4, "chunks_embedded": 0, "chunks_in_collection": 16, "index_changed": true}
+  audit after delete:
+  "orphan_chunks": {},
+  "consistent": true
+
+=== 6. add a NEWER version of the fee document (2027-28): the 2026-27 version is archived (superseded=True)
+{"run_id": "20261122T172828Z-demo6", "documents_seen": 5, "chunks_embedded": 5, "chunks_in_collection": 21, "index_changed": true}
+    course-withdrawal-guide      active    superseded=False  chunks=3
+    examination-rules-faq        active    superseded=False  chunks=4
+    fee-structure-2026-27        archived  superseded=True   chunks=5
+    fee-structure-2027-28        active    superseded=False  chunks=5
+    scholarship-policy-2026      active    superseded=False  chunks=4
+
+=== 7. rollback: restore fee 2026-27 as the active version
+{"ts": "2026-11-22T17:28:39Z", "logger": "ragops.ingest", "msg": "rollback", "family": "fee-structure", "restored": "fee-structure-2026-27", "version": "2026-27", "chunks_active": 5, "method": "metadata flip"}
+  "restored": "fee-structure-2026-27",
+  "chunks_active": 5,
+  "method": "metadata flip"
+    course-withdrawal-guide      active    superseded=False  chunks=3
+    examination-rules-faq        active    superseded=False  chunks=4
+    fee-structure-2026-27        active    superseded=False  chunks=5
+    fee-structure-2027-28        archived  superseded=True   chunks=5
+    scholarship-policy-2026      active    superseded=False  chunks=4
+
+=== ledger
+doc_id                                           family                 version   status    chunks
+course-withdrawal-guide                          course-withdrawal-guide 2026-08   active    3
+examination-rules-faq                            examination-rules-faq  2026-09   active    4
+fee-structure-2026-27                            fee-structure          2026-27   active    5
+fee-structure-2027-28                            fee-structure          2027-28   archived  5
+library-rules                                    library-rules          2026-07   deleted   0
+scholarship-policy-2026                          scholarship-policy     2026-08   active    4
+# exit code: 0

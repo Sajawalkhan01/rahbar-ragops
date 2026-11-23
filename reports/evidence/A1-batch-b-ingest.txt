@@ -1,0 +1,26 @@
+# evidence A1-batch-b-ingest
+# captured: 2026-11-22T17:23:52Z on SajawalPC
+$ bash scripts/w.sh python -m ragops.ingestion run --inbox data/inbox/batch_b --label batchB-first
+{"ts": "2026-11-22T17:23:55Z", "logger": "ragops.ingest", "msg": "ingest start", "run_id": "20261122T172354Z-batchB-first", "inbox": "data/inbox/batch_b", "documents": 18, "unchanged": 0, "to_verify": 18, "collection": "rahbar"}
+{"ts": "2026-11-22T17:24:08Z", "logger": "ragops.ingest", "msg": "quarantined", "doc": "empty-notice.md", "reasons": ["quality: document is empty: extraction produced no text"]}
+{"ts": "2026-11-22T17:24:09Z", "logger": "ragops.ingest", "msg": "quarantined", "doc": "corrupt-timetable.pdf", "reasons": ["quality: extraction failed: PdfminerException: Unexpected EOF"]}
+{"ts": "2026-11-22T17:24:09Z", "logger": "ragops.ingest", "msg": "quarantined", "doc": "library-rules-copy.md", "reasons": ["uniqueness: exact duplicate of library-rules (same file SHA-256)"]}
+{"ts": "2026-11-22T17:24:09Z", "logger": "ragops.ingest", "msg": "quarantined", "doc": "no-metadata-notice.md", "reasons": ["completeness: missing metadata: source, title, date_or_version"]}
+{"ts": "2026-11-22T17:24:09Z", "logger": "ragops.ingest", "msg": "quarantined", "doc": "scan-notice-garbled.txt", "reasons": ["quality: garbled: 1.9% replacement/control characters", "completeness: truncated: text ends mid-sentence: ...'*\ufffdz r$>nlb m|jgmw& bf\\\\%\ufffd|{[ nbdf}c& tnfjb\\\\ m*q{]*p'"]}
+{"ts": "2026-11-22T17:24:09Z", "logger": "ragops.ingest", "msg": "quarantined", "doc": "exam-schedule-truncated.md", "reasons": ["completeness: truncated: text ends mid-sentence: ...'k so that the clash can be resolved by arranging a'"]}
+{"ts": "2026-11-22T17:24:09Z", "logger": "ragops.ingest", "msg": "quarantined", "doc": "library-rules-reformatted.md", "reasons": ["uniqueness: exact duplicate of library-rules (identical normalised text)"]}
+{"ts": "2026-11-22T17:24:09Z", "logger": "ragops.ingest", "msg": "quarantined", "doc": "examination-rules-faq-draft.md", "reasons": ["uniqueness: near-duplicate of examination-rules-faq (embedding cosine 1.000, shingle overlap 0.92)"]}
+{"ts": "2026-11-22T17:24:09Z", "logger": "ragops.ingest", "msg": "quarantined", "doc": "scholarship-policy-2026-copy.md", "reasons": ["uniqueness: exact duplicate of scholarship-policy-2026 (same file SHA-256)"]}
+{"ts": "2026-11-22T17:24:09Z", "logger": "ragops.ingest", "msg": "quarantined", "doc": "academic-rules-2023-resubmission.md", "reasons": ["recency: stale: a newer version exists (academic-rules-handbook-jun-2026 (2026.6), undergraduate-academic-rules-aug-2023 (2023.8)) and this document is not declared superseded"]}
+{"ts": "2026-11-22T17:24:10Z", "logger": "ragops.ingest", "msg": "indexed", "doc": "library-rules.md", "chunks": 3, "embedded": 3, "reused": 0, "stale_deleted": 0, "status": "active"}
+{"ts": "2026-11-22T17:24:11Z", "logger": "ragops.ingest", "msg": "indexed", "doc": "examination-rules-faq.md", "chunks": 4, "embedded": 4, "reused": 0, "stale_deleted": 0, "status": "active"}
+{"ts": "2026-11-22T17:24:13Z", "logger": "ragops.ingest", "msg": "indexed", "doc": "fee-structure-2027-28.md", "chunks": 5, "embedded": 5, "reused": 0, "stale_deleted": 0, "status": "active"}
+{"ts": "2026-11-22T17:24:14Z", "logger": "ragops.ingest", "msg": "archived", "doc": "fee-structure-page", "superseded_by": "fee-structure-2027-28", "chunks": 9}
+{"ts": "2026-11-22T17:24:15Z", "logger": "ragops.ingest", "msg": "indexed", "doc": "internship-guidelines.pdf", "chunks": 1, "embedded": 1, "reused": 0, "stale_deleted": 0, "status": "active"}
+{"ts": "2026-11-22T17:24:17Z", "logger": "ragops.ingest", "msg": "indexed", "doc": "library-rules-reworded.md", "chunks": 3, "embedded": 3, "reused": 0, "stale_deleted": 0, "status": "active"}
+{"ts": "2026-11-22T17:24:18Z", "logger": "ragops.ingest", "msg": "indexed", "doc": "course-withdrawal-guide.md", "chunks": 3, "embedded": 3, "reused": 0, "stale_deleted": 0, "status": "active"}
+{"ts": "2026-11-22T17:24:20Z", "logger": "ragops.ingest", "msg": "indexed", "doc": "scholarship-policy-2026.md", "chunks": 4, "embedded": 4, "reused": 0, "stale_deleted": 0, "status": "active"}
+{"ts": "2026-11-22T17:24:21Z", "logger": "ragops.ingest", "msg": "indexed", "doc": "plagiarism-and-ai-guidance.md", "chunks": 3, "embedded": 3, "reused": 0, "stale_deleted": 0, "status": "active"}
+{"ts": "2026-11-22T17:24:21Z", "logger": "ragops.ingest", "msg": "ingest finished", "run_id": "20261122T172354Z-batchB-first", "documents_seen": 18, "chunks_embedded": 26, "chunks_in_collection": 627, "index_changed": true, "seconds": 26.84}
+{"run_id": "20261122T172354Z-batchB-first", "documents_seen": 18, "chunks_embedded": 26, "chunks_in_collection": 627, "index_changed": true}
+# exit code: 0

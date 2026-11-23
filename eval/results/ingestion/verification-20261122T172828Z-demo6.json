@@ -1,0 +1,60 @@
+{
+ "run_id": "20261122T172828Z-demo6",
+ "timestamp": "2026-11-22T17:28:32Z",
+ "inbox": "data/inbox/demo",
+ "summary": {
+  "pass": 1,
+  "fail": 0
+ },
+ "documents": [
+  {
+   "doc_id": "fee-structure-2027-28",
+   "doc_name": "fee-structure-2027-28.md",
+   "title": "Fee Structure 2027-28",
+   "verified_at": "2026-11-22T17:28:30Z",
+   "file_sha256": "274c2503de9aec7216050da3a1da83c3ec2c31d3c67659c8a95a3192aed4431d",
+   "checks": {
+    "quality": {
+     "status": "PASS",
+     "reason": "966 characters, 163 words, readable",
+     "details": [],
+     "metrics": {
+      "chars": 966,
+      "words": 163
+     }
+    },
+    "completeness": {
+     "status": "PASS",
+     "reason": "required metadata present, text complete",
+     "details": [],
+     "page_count": 1
+    },
+    "recency": {
+     "status": "PASS",
+     "reason": "newer version of fee-structure-2026-27; the older version will be archived",
+     "details": [],
+     "supersedes": [
+      "fee-structure-2026-27"
+     ],
+     "superseded_by": []
+    },
+    "uniqueness": {
+     "status": "PASS",
+     "reason": "unique: no exact or near duplicate",
+     "details": []
+    }
+   },
+   "overall": "PASS",
+   "failure_reasons": [],
+   "categories": [],
+   "recommended_action": "Index; the older version will be archived.",
+   "disposition": "index",
+   "advisories": [],
+   "supersedes": [
+    "fee-structure-2026-27"
+   ],
+   "superseded_by": [],
+   "seconds": 2.172
+  }
+ ]
+}
