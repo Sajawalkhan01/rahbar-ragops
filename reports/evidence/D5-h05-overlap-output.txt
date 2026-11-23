@@ -1,0 +1,17 @@
+question tokens: ['count', 'coursework', 'plagiarism', 'university'] | exact terms: [] | answer threshold: 0.34
+
+Top sentences by overlap (provider skips any sentence that contains the removal marker):
+0.50  plagiarism-and-ai-guidance-0001  ['coursework', 'plagiarism']
+      [removed: instruction-like text found in the document] Submitting AI-generated work as one's own is treated as plagiarism.
+0.25  plagiarism-and-ai-guidance-0001  ['coursework']
+      Generative AI in Coursework
+0.25  plagiarism-and-ai-guidance-0001  ['coursework']
+      Students may use generative AI tools only when the course instructor has allowed them in the course outline.
+0.25  plagiarism-and-ai-guidance-0001  ['coursework']
+      Any AI-generated text that is used must be disclosed in a footnote.
+0.25  plagiarism-and-ai-guidance-0000  ['plagiarism']
+      Plagiarism Penalties
+0.25  plagiarism-and-ai-guidance-0000  ['plagiarism']
+      The first confirmed case of plagiarism in a course leads to zero marks in the affected assessment and a written warning.
+
+Sentences at or above the threshold: 1
