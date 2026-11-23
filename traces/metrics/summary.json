@@ -1,0 +1,55 @@
+{
+  "window": "72h",
+  "generated_at": "2026-11-23T14:04:12Z",
+  "queries": 400,
+  "top1_similarity": {
+    "count": 400,
+    "mean": 0.7526,
+    "p10": 0.62,
+    "p50": 0.774,
+    "p90": 0.851,
+    "histogram": {
+      "0.0-0.5": 0,
+      "0.5-0.6": 39,
+      "0.6-0.7": 76,
+      "0.7-0.8": 125,
+      "0.8-0.9": 160,
+      "0.9-1.0": 0
+    }
+  },
+  "abstention_rate": 0.3525,
+  "cache": {
+    "lookups": 0,
+    "hits": 0,
+    "hit_rate": null,
+    "bypassed": 400
+  },
+  "latency_ms_per_stage": {
+    "generation": {
+      "p50": 3.29,
+      "p95": 10.889,
+      "n": 323
+    },
+    "retrieval": {
+      "p50": 25.915,
+      "p95": 461.919,
+      "n": 400
+    },
+    "total": {
+      "p50": 34.125,
+      "p95": 466.846,
+      "n": 400
+    }
+  },
+  "guardrail_actions": {
+    "abstain_below_relevance_floor": 77,
+    "injection_sentence_removed": 10,
+    "question_injection_flagged": 26
+  },
+  "injection_attempts_flagged": 36,
+  "health": {
+    "fallback_answers": 0,
+    "citations_removed": 0,
+    "queries_without_retrieval": 0
+  }
+}
