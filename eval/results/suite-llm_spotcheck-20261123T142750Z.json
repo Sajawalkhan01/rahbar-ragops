@@ -1,0 +1,750 @@
+{
+ "label": "llm_spotcheck",
+ "timestamp": "2026-11-23T14:27:48Z",
+ "state": "AB",
+ "seed": 20260301,
+ "golden_file": "eval/golden.jsonl",
+ "golden_questions": 6,
+ "config": {
+  "evaluation": {
+   "seed": 20260301,
+   "k_values": [
+    3,
+    5
+   ],
+   "ndcg_k": 5,
+   "top_k": 5,
+   "provider": "extractive",
+   "collection": "rahbar",
+   "golden": "eval/golden.jsonl",
+   "results_dir": "eval/results",
+   "embedding": {
+    "paraphrase_pairs": "eval/embedding_pairs.json",
+    "determinism_repeats": 2
+   },
+   "noise": {
+    "typo_rate": 0.08,
+    "irrelevant_docs_dir": "eval/noise_docs"
+   },
+   "generation": {
+    "support_threshold": 0.55,
+    "abstain_min_overlap": 0.34
+   },
+   "coverage": {
+    "threshold": 0.78,
+    "required_share": 0.85,
+    "live_queries": "eval/live_queries/live_queries.jsonl"
+   }
+  },
+  "experiment": {
+   "name": "baseline",
+   "change": "none",
+   "collection": "rahbar",
+   "chunk_size": 400,
+   "chunk_overlap": 50,
+   "top_k": 5,
+   "relevance_floor": 0.7,
+   "hybrid": true
+  },
+  "overrides": {
+   "top_k": 5,
+   "llm_provider": "ollama-host",
+   "collection": "rahbar",
+   "relevance_floor": 0.7,
+   "hybrid": true
+  }
+ },
+ "environment": {
+  "python": "3.12.16",
+  "platform": "Linux-5.10.16.3-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+  "embedding_model": "nomic-embed-text",
+  "embedding_model_version": "0a109f422b47",
+  "llm_provider": "ollama-host",
+  "llm_model": "llama3.2:3b",
+  "temperature": 0.2,
+  "top_k": 5,
+  "hybrid": true,
+  "relevance_floor": 0.7,
+  "collection": "rahbar",
+  "candidate_pool": 20,
+  "rrf_k": 60,
+  "ollama_url_host": "localhost:11434",
+  "pod": "local",
+  "index_chunk_size": 400,
+  "index_chunk_overlap": 50,
+  "index_chunks": 627,
+  "index_embed_model_version": "0a109f422b47",
+  "index_id": "7a237adc23434936935249d64036fa5b"
+ },
+ "runs": [
+  {
+   "embedding": {
+    "embedding_model": "nomic-embed-text",
+    "paraphrase": {
+     "pairs": 16,
+     "mean_cosine": 0.8866,
+     "min": 0.8212,
+     "max": 0.9296,
+     "scores": [
+      0.8721,
+      0.8987,
+      0.8591,
+      0.9202,
+      0.8652,
+      0.8853,
+      0.8679,
+      0.8969,
+      0.8212,
+      0.8898,
+      0.8907,
+      0.9159,
+      0.8843,
+      0.9083,
+      0.8801,
+      0.9296
+     ]
+    },
+    "unrelated": {
+     "pairs": 16,
+     "mean_cosine": 0.5024,
+     "min": 0.4083,
+     "max": 0.6186,
+     "scores": [
+      0.5137,
+      0.489,
+      0.5261,
+      0.5393,
+      0.4789,
+      0.5079,
+      0.5263,
+      0.4083,
+      0.4583,
+      0.529,
+      0.5362,
+      0.4881,
+      0.4573,
+      0.4604,
+      0.6186,
+      0.501
+     ]
+    },
+    "gap": 0.3842,
+    "separation_check": {
+     "min_paraphrase_above_max_unrelated": true,
+     "overlap_note": "True means every paraphrase pair scored higher than every unrelated pair"
+    },
+    "time_per_chunk_ms": {
+     "n": 20,
+     "mean": 979.6,
+     "p50": 681.3,
+     "max": 3450.8,
+     "note": "single-chunk requests, CPU, after a warm-up call"
+    },
+    "determinism": {
+     "texts": 5,
+     "repeats": 2,
+     "max_abs_difference": 0.0,
+     "deterministic": true
+    }
+   },
+   "retrieval": {
+    "clean": {
+     "questions": 6,
+     "metrics": {
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 1.0,
+      "ndcg@5": 1.0
+     },
+     "by_type": {
+      "answerable": {
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0
+      }
+     },
+     "per_question": [
+      {
+       "id": "q01",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "What minimum CGPA must an undergraduate keep to avoid academic warning?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "academic-rules-handbook-jun-2026-0040",
+        "source": "academic-rules-handbook-jun-2026.pdf",
+        "page": 24,
+        "section": "Academic Warning/Probation",
+        "score": 0.8806
+       }
+      },
+      {
+       "id": "q02",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "What happens to a student whose CGPA stays below 2.00 for three consecutive semesters?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "academic-rules-handbook-jun-2026-0040",
+        "source": "academic-rules-handbook-jun-2026.pdf",
+        "page": 24,
+        "section": "Academic Warning/Probation",
+        "score": 0.7703
+       }
+      },
+      {
+       "id": "q03",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "What is the tuition fee per credit hour for BS students in 2026-27?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "fee-structure-page-0003",
+        "source": "fee-structure-page.html",
+        "page": 1,
+        "section": "Tuition Fee (w.e.f. Fall 2026 semester)",
+        "score": 0.8334
+       }
+      },
+      {
+       "id": "q04",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "How much is the one-time admission fee, and is there a refundable security deposit?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "fee-structure-2027-28-0001",
+        "source": "fee-structure-2027-28.md",
+        "page": 1,
+        "section": "Security Deposit",
+        "score": 0.8002
+       }
+      },
+      {
+       "id": "q05",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "Is the fee refunded when a student withdraws from a course?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "academic-rules-handbook-jun-2026-0037",
+        "source": "academic-rules-handbook-jun-2026.pdf",
+        "page": 22,
+        "section": "Withdrawal from a Course",
+        "score": 0.839
+       }
+      },
+      {
+       "id": "q06",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "How many courses can a student repeat in the summer semester?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "academic-rules-handbook-jun-2026-0044",
+        "source": "academic-rules-handbook-jun-2026.pdf",
+        "page": 28,
+        "section": "6. Rules for Summer Semester",
+        "score": 0.8318
+       }
+      }
+     ]
+    },
+    "noise_irrelevant_docs": {
+     "questions": 6,
+     "metrics": {
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 1.0,
+      "ndcg@5": 1.0
+     },
+     "by_type": {
+      "answerable": {
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0
+      }
+     },
+     "per_question": [
+      {
+       "id": "q01",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "What minimum CGPA must an undergraduate keep to avoid academic warning?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "academic-rules-handbook-jun-2026-0040",
+        "source": "academic-rules-handbook-jun-2026.pdf",
+        "page": 24,
+        "section": "Academic Warning/Probation",
+        "score": 0.8806
+       }
+      },
+      {
+       "id": "q02",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "What happens to a student whose CGPA stays below 2.00 for three consecutive semesters?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "academic-rules-handbook-jun-2026-0040",
+        "source": "academic-rules-handbook-jun-2026.pdf",
+        "page": 24,
+        "section": "Academic Warning/Probation",
+        "score": 0.7703
+       }
+      },
+      {
+       "id": "q03",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "What is the tuition fee per credit hour for BS students in 2026-27?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "fee-structure-page-0003",
+        "source": "fee-structure-page.html",
+        "page": 1,
+        "section": "Tuition Fee (w.e.f. Fall 2026 semester)",
+        "score": 0.8334
+       }
+      },
+      {
+       "id": "q04",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "How much is the one-time admission fee, and is there a refundable security deposit?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "fee-structure-2027-28-0001",
+        "source": "fee-structure-2027-28.md",
+        "page": 1,
+        "section": "Security Deposit",
+        "score": 0.8002
+       }
+      },
+      {
+       "id": "q05",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "Is the fee refunded when a student withdraws from a course?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "academic-rules-handbook-jun-2026-0037",
+        "source": "academic-rules-handbook-jun-2026.pdf",
+        "page": 22,
+        "section": "Withdrawal from a Course",
+        "score": 0.839
+       }
+      },
+      {
+       "id": "q06",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "How many courses can a student repeat in the summer semester?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "academic-rules-handbook-jun-2026-0044",
+        "source": "academic-rules-handbook-jun-2026.pdf",
+        "page": 28,
+        "section": "6. Rules for Summer Semester",
+        "score": 0.8318
+       }
+      }
+     ],
+     "irrelevant_chunks_added": 8,
+     "irrelevant_documents": 4
+    },
+    "noise_typos": {
+     "questions": 6,
+     "metrics": {
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 1.0,
+      "ndcg@5": 1.0
+     },
+     "by_type": {
+      "answerable": {
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0
+      }
+     },
+     "per_question": [
+      {
+       "id": "q01",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "What minimum CGPA must an undergraduate keep to avoid academci warning?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "academic-rules-handbook-jun-2026-0040",
+        "source": "academic-rules-handbook-jun-2026.pdf",
+        "page": 24,
+        "section": "Academic Warning/Probation",
+        "score": 0.8478
+       }
+      },
+      {
+       "id": "q02",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "What haappens to a student whose CGPA stays below 2.00 for three consecutive semesters?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "academic-rules-handbook-jun-2026-0040",
+        "source": "academic-rules-handbook-jun-2026.pdf",
+        "page": 24,
+        "section": "Academic Warning/Probation",
+        "score": 0.7663
+       }
+      },
+      {
+       "id": "q03",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "What is the tuition fee per credit hour for BS students in 2026-27?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "fee-structure-page-0003",
+        "source": "fee-structure-page.html",
+        "page": 1,
+        "section": "Tuition Fee (w.e.f. Fall 2026 semester)",
+        "score": 0.8334
+       }
+      },
+      {
+       "id": "q04",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "How much is the one-time admission fee, and is there a refundable security deposit?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "fee-structure-2027-28-0001",
+        "source": "fee-structure-2027-28.md",
+        "page": 1,
+        "section": "Security Deposit",
+        "score": 0.8002
+       }
+      },
+      {
+       "id": "q05",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "Is the fee refunded when a student withdraws from a course?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "academic-rules-handbook-jun-2026-0037",
+        "source": "academic-rules-handbook-jun-2026.pdf",
+        "page": 22,
+        "section": "Withdrawal from a Course",
+        "score": 0.839
+       }
+      },
+      {
+       "id": "q06",
+       "type": "answerable",
+       "category": "ordinary",
+       "query": "How many courses can a student repeat in the summer semester?",
+       "recall@3": 1.0,
+       "recall@5": 1.0,
+       "mrr": 1.0,
+       "ndcg@5": 1.0,
+       "top1": {
+        "chunk_id": "academic-rules-handbook-jun-2026-0044",
+        "source": "academic-rules-handbook-jun-2026.pdf",
+        "page": 28,
+        "section": "6. Rules for Summer Semester",
+        "score": 0.8318
+       }
+      }
+     ],
+     "typo_rate": 0.08
+    },
+    "delta_vs_clean": {
+     "irrelevant_docs": {
+      "recall@3": 0.0,
+      "recall@5": 0.0,
+      "mrr": 0.0,
+      "ndcg@5": 0.0
+     },
+     "typos": {
+      "recall@3": 0.0,
+      "recall@5": 0.0,
+      "mrr": 0.0,
+      "ndcg@5": 0.0
+     }
+    }
+   },
+   "generation": {
+    "questions": 6,
+    "answerable_or_hard": 6,
+    "unanswerable": 0,
+    "metrics": {
+     "answer_correctness": 0.0,
+     "faithfulness": null,
+     "citation_validity": null,
+     "abstention_correctness": null,
+     "false_abstention_rate": 1.0
+    },
+    "latency_ms": {
+     "n": 6,
+     "p50": 187401.75,
+     "p95": 192429.997,
+     "mean": 188140.783,
+     "max": 193080.92
+    },
+    "latency_ms_per_stage": {
+     "generation": {
+      "n": 6,
+      "p50": 183223.62,
+      "p95": 186549.302,
+      "mean": 184044.772,
+      "max": 186844.93
+     },
+     "retrieval": {
+      "n": 6,
+      "p50": 1497.595,
+      "p95": 4239.392,
+      "mean": 1903.357,
+      "max": 4907.53
+     },
+     "total": {
+      "n": 6,
+      "p50": 186987.925,
+      "p95": 191869.745,
+      "mean": 187720.397,
+      "max": 192500.28
+     }
+    },
+    "wrong_or_abstained": [
+     "q01",
+     "q02",
+     "q03",
+     "q04",
+     "q05",
+     "q06"
+    ],
+    "wrongly_answered_unanswerable": [],
+    "per_question": [
+     {
+      "id": "q01",
+      "type": "answerable",
+      "category": "ordinary",
+      "question": "What minimum CGPA must an undergraduate keep to avoid academic warning?",
+      "must_abstain": false,
+      "answered": false,
+      "answer": "I could not produce a reliable answer from the documents just now. Please try rephrasing the question, or try again in a moment.",
+      "expect": "2.00",
+      "correct": false,
+      "faithfulness": null,
+      "citations_valid": 0,
+      "citations_total": 0,
+      "top1_score": 0.8806,
+      "latency_ms": 185933.96,
+      "stage_ms": {
+       "retrieval": 789.91,
+       "generation": 183437.21,
+       "total": 185609.78
+      },
+      "trace_id": "41e4a41835eb4cb5af3d562e7b03a0b4",
+      "guardrails": [
+       "injection_sentence_removed",
+       "fallback_answer"
+      ],
+      "drifted": false
+     },
+     {
+      "id": "q02",
+      "type": "answerable",
+      "category": "ordinary",
+      "question": "What happens to a student whose CGPA stays below 2.00 for three consecutive semesters?",
+      "must_abstain": false,
+      "answered": false,
+      "answer": "I could not produce a reliable answer from the documents just now. Please try rephrasing the question, or try again in a moment.",
+      "expect": "closed",
+      "correct": false,
+      "faithfulness": null,
+      "citations_valid": 0,
+      "citations_total": 0,
+      "top1_score": 0.7703,
+      "latency_ms": 185298.05,
+      "stage_ms": {
+       "retrieval": 1059.02,
+       "generation": 182950.56,
+       "total": 185023.68
+      },
+      "trace_id": "e6d73f5d73cb4e01838113f8c01e0490",
+      "guardrails": [
+       "fallback_answer"
+      ],
+      "drifted": false
+     },
+     {
+      "id": "q03",
+      "type": "answerable",
+      "category": "ordinary",
+      "question": "What is the tuition fee per credit hour for BS students in 2026-27?",
+      "must_abstain": false,
+      "answered": false,
+      "answer": "I could not produce a reliable answer from the documents just now. Please try rephrasing the question, or try again in a moment.",
+      "expect": "12,000",
+      "correct": false,
+      "faithfulness": null,
+      "citations_valid": 0,
+      "citations_total": 0,
+      "top1_score": 0.8334,
+      "latency_ms": 185185.0,
+      "stage_ms": {
+       "retrieval": 492.53,
+       "generation": 183010.03,
+       "total": 184844.43
+      },
+      "trace_id": "14bad748ad5a438fa75bdb9bc8b07f3a",
+      "guardrails": [
+       "fallback_answer"
+      ],
+      "drifted": false
+     },
+     {
+      "id": "q04",
+      "type": "answerable",
+      "category": "ordinary",
+      "question": "How much is the one-time admission fee, and is there a refundable security deposit?",
+      "must_abstain": false,
+      "answered": false,
+      "answer": "I could not produce a reliable answer from the documents just now. Please try rephrasing the question, or try again in a moment.",
+      "expect": "32,000",
+      "correct": false,
+      "faithfulness": null,
+      "citations_valid": 0,
+      "citations_total": 0,
+      "top1_score": 0.8002,
+      "latency_ms": 188869.54,
+      "stage_ms": {
+       "retrieval": 4907.53,
+       "generation": 182363.48,
+       "total": 188366.07
+      },
+      "trace_id": "3d658559fa474a20927a8826bbbf0917",
+      "guardrails": [
+       "fallback_answer"
+      ],
+      "drifted": true
+     },
+     {
+      "id": "q05",
+      "type": "answerable",
+      "category": "ordinary",
+      "question": "Is the fee refunded when a student withdraws from a course?",
+      "must_abstain": false,
+      "answered": false,
+      "answer": "I could not produce a reliable answer from the documents just now. Please try rephrasing the question, or try again in a moment.",
+      "expect": "not refunded",
+      "correct": false,
+      "faithfulness": null,
+      "citations_valid": 0,
+      "citations_total": 0,
+      "top1_score": 0.839,
+      "latency_ms": 190477.23,
+      "stage_ms": {
+       "retrieval": 1936.17,
+       "generation": 185662.42,
+       "total": 189978.14
+      },
+      "trace_id": "d05804fa71d84b65b784e91f5d9c3f52",
+      "guardrails": [
+       "fallback_answer"
+      ],
+      "drifted": false
+     },
+     {
+      "id": "q06",
+      "type": "answerable",
+      "category": "ordinary",
+      "question": "How many courses can a student repeat in the summer semester?",
+      "must_abstain": false,
+      "answered": false,
+      "answer": "I could not produce a reliable answer from the documents just now. Please try rephrasing the question, or try again in a moment.",
+      "expect": "2",
+      "correct": false,
+      "faithfulness": null,
+      "citations_valid": 0,
+      "citations_total": 0,
+      "top1_score": 0.8318,
+      "latency_ms": 193080.92,
+      "stage_ms": {
+       "retrieval": 2234.98,
+       "generation": 186844.93,
+       "total": 192500.28
+      },
+      "trace_id": "ec0f2b13a98247c89ffbab3a3e336904",
+      "guardrails": [
+       "fallback_answer"
+      ],
+      "drifted": false
+     }
+    ]
+   },
+   "seconds": 1370.0
+  }
+ ],
+ "stochasticity": {
+  "metrics_compared": 0,
+  "max_abs_diff_quality": null,
+  "largest": []
+ }
+}
