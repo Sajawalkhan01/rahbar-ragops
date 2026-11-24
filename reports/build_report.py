@@ -20,7 +20,7 @@ from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, 
 OUT = Path(__file__).resolve().parent / "assignment_03_report.pdf"
 
 # ---- PLACEHOLDERS: only the group can fill these -------------------------------------------------------
-MEMBERS = "[PENDING: member 1 name, roll no.]  /  [PENDING: member 2 name, roll no.]"
+MEMBERS = "Muhammad Sajawal Khan (24K-3068)  /  Muhammad Abdullah (24I-3141)"
 REPO = "https://github.com/Sajawalkhan01/rahbar-ragops"
 SHORT_ANSWERS = [
     "<b>(a) Which Batch B check caught the most, what got through, what would catch it?</b> Uniqueness caught the most: 4 of the 10 failures (exact copy, reformatted copy, draft near-duplicate, scholarship copy); quality and completeness caught 3 each, recency 1. "
