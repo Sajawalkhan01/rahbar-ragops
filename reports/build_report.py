@@ -22,12 +22,33 @@ OUT = Path(__file__).resolve().parent / "assignment_03_report.pdf"
 # ---- PLACEHOLDERS: only the group can fill these -------------------------------------------------------
 MEMBERS = "[PENDING: member 1 name, roll no.]  /  [PENDING: member 2 name, roll no.]"
 REPO = "https://github.com/Sajawalkhan01/rahbar-ragops"
-SHORT_ANSWERS = "[PENDING: member 2 writes short answers (a)-(f); evidence pointers are in reports/SHORT_ANSWER_FACTS.md]"
-CONTRIBUTIONS = [["Member", "What they did"],
-                 ["[PENDING member 1]", "[PENDING: to be confirmed by the group against `git log`]"],
-                 ["[PENDING member 2]", "[PENDING: to be confirmed by the group against `git log`]"]]
-AI_STATEMENT = "[PENDING: 2 to 3 lines, written by the group]"
-PART_E = "[PENDING member 2: live queries (>= 40), coverage before/after, >= 6 new golden questions, coverage exit code]"
+SHORT_ANSWERS = [
+    "<b>(a) Which Batch B check caught the most, what got through, what would catch it?</b> Uniqueness caught the most: 4 of the 10 failures (exact copy, reformatted copy, draft near-duplicate, scholarship copy); quality and completeness caught 3 each, recency 1. "
+    "<i>library-rules-reworded.md</i> (same rules, different words) passed all four checks and is indexed next to the original. The injected <i>plagiarism-and-ai-guidance.md</i> also passed, because injection is only an advisory in our policy; it was handled at query time. "
+    "A document-level embedding-similarity check would catch the reworded duplicate; a claim-level contradiction check would be needed for conflicting versions of one rule.",
+    "<b>(b) A module metric looked fine but a higher level did not.</b> The embedding module separated paraphrase pairs (0.887) from unrelated pairs (0.502) perfectly and deterministically, yet recall@5 on hard questions was only 0.60. After Batch B the right chunk for i01 and h03 fell from rank 1 to 2 (MRR 1.0 to 0.5). "
+    "The chunk-200 candidate shows it too: recall@5 rose (0.913 to 0.957) while MRR fell (0.855 to 0.780).",
+    "<b>(c) Archive or delete old versions?</b> We archive. A superseded version stays as metadata (superseded=True, status=archived) with its raw file under archive/, and rollback restores it (A2-incremental-demo.txt). "
+    "If the archive were deleted, rollback would be impossible and old answers and traces could not be reproduced, because the version they cite would be gone.",
+    "<b>(d) Which metric do we trust least?</b> Faithfulness. It is a lexical overlap score and is 1.0 by construction with the extractive generator, since every answer is copied from the context. Answer correctness (word overlap with a reference) is also weak, and the golden set is small (34; 23 retrieval questions), so one question moves recall@5 by about 0.04.",
+    "<b>(e) Which paper idea was hardest to apply, and what did we change?</b> Live testing and coverage checking, because they assume real users and we had none. The 40 live queries were drafted by hand, so the coverage result (47.5% rising to 52.5%, below the 85% target) says more about our drafted queries than about real usage; we reported it as such. "
+    "We also could not run a real LLM usefully on a CPU (0 of 6 answers accepted, LLM-SPOTCHECK.md), so we changed the suite to a deterministic extractive generator and said which metric that makes weak (faithfulness).",
+    "<b>(f) Which Kubernetes object carries which responsibility?</b> Single writer: only the ingestion Job and CronJob mount the data volume read-write and set RAGOPS_ROLE=ingestor; the CronJob uses concurrencyPolicy Forbid; the API Deployment does not mount that volume. "
+    "StatefulSet chroma and its PVC: vector-store persistence. ConfigMap ragops-config: the embedding model, stated once for every pod. ConfigMap release-thresholds: the gate policy. Eval Jobs: the gate (a failing gate fails the Job and stops the release). "
+    "API Deployment with RollingUpdate and maxUnavailable 0: releases without downtime; rollout undo and change-cause annotations: rollback and history. PVC ragops-traces: traceability. Candidate Deployment and Service on rahbar_c200: an isolated candidate index. "
+    "Limit: a two-writers-at-once test was not run in the cluster.",
+]
+CONTRIBUTIONS = [["Member", "What they did (from git log)"],
+                 ["Sajawalkhan01", "Parts A-D code and runs (verification, quarantine, incremental ingest, evaluation suite, gate, tracing), the 18-file Batch B set, Part F (Kubernetes manifests, Jobs, rollout and rollback demos, cluster evidence), report builder; 24 commits."],
+                 ["abdy879", "Part E: 40 live queries, coverage before and after, golden questions n01-n06; review sheets for the synthetic golden questions and the 12 answer labels; D5 analysis of h05; short answers; 15 commits including merges of PRs #1-#5."]]
+AI_STATEMENT = ("Claude Code (Anthropic) wrote most of the code, manifests and first drafts of documents, and ran the commands; details in docs/AI-USAGE.md. "
+                "The group chose the scope, ran and approved the commands, reviewed pull requests, and checked results against committed output. "
+                "The live queries, review sheets and drafts of the short answers were also prepared with AI help and then edited by the group.")
+PART_E = ("<b>Coverage (E1, E2, E4).</b> 40 live queries (34 in-domain, 6 outside the corpus; drafted with AI help, not real traffic) were compared with the golden set at cosine threshold 0.78; the requirement is 85% covered. "
+          "Before: 34 golden questions, 19 of 40 covered (47.5%; in-domain 50.0%), mean best similarity 0.7456. We added six golden questions n01-n06 (library fines, lost books, merit scholarship, exam reporting time, allowed items, rechecking). "
+          "After: 40 golden questions, 21 of 40 covered (<b>52.5%</b>; in-domain 55.9%), mean 0.7735. Two queries (library fine and lost book) became covered; five more moved closer but stay below 0.78. "
+          "<b>The 85% target is still not met</b>, and the checker exits non-zero. The gain is partly circular (n01-n06 were written after seeing which queries were uncovered) and the live queries are drafted, not real traffic. "
+          "Topics still uncovered: internship, ChatGPT in assignments, repeating a course, admission freeze, distinction CGPA, scholarship renewal. Evidence: eval/results/COVERAGE-before-vs-after.md.")
 # --------------------------------------------------------------------------------------------------------
 
 ss = getSampleStyleSheet()
@@ -72,7 +93,7 @@ story.append(table([
     ["Update retrieval sources", "Embeds only changed chunks (chunk-text hash reuse), deletes stale chunks, archives by metadata; rollback; orphan audit; single-writer lock", "ragops/ingestion/incremental.py, ragops/vectorstore.py", "One embedding model; no re-embedding migration tool"],
     ["Offline testing", "Embedding, retrieval (recall@3/5, MRR, nDCG@5, noise) and end-to-end suite, run twice, one command; release gate", "ragops/evaluation/suite.py, ragops/gate.py", "Faithfulness is lexical; no LLM judge; golden set is small (34)"],
     ["Live testing", "One JSON trace per query, inspector rebuilds the prompt, metrics, guardrail log, summary", "api/app/tracing.py, ragops/tracing/", "No online A/B or user feedback capture"],
-    ["Check coverage", "Embeds live queries and compares to the golden set; exit non-zero below a threshold", "ragops/evaluation/coverage.py", "[PENDING member 2] live queries not collected yet"],
+    ["Check coverage", "Embeds live queries and compares to the golden set; exit non-zero below a threshold", "ragops/evaluation/coverage.py", "Coverage 52.5% after n01-n06, below the 85% target (Part E)"],
 ], [22, 74, 44, 40]))
 
 # ---------------------------------------------------------------- G2
@@ -118,12 +139,18 @@ story.append(P("Part D: traces and guardrails", H2))
 story.append(P("400 traces summarised (eval runs): abstention rate 0.35, cache hit rate not measured (cache bypassed in eval), retrieval p50/p95 26/462 ms, "
                "36 injection attempts flagged (26 questions, 10 retrieved-passage sentences removed from the planted note). The inspector rebuilds the prompt from the stored passages and the hash matches "
                "(D2-trace-inspector-guardrail.txt). <b>Root cause from a trace (D5):</b> "
-               "<font color='#9b1c1c'>[PENDING member 2: five lines for golden question h05, trace 3f951a96...; the data is in eval/results/DRIFT-A-vs-AB.md]</font>"))
+               "question h05 (plagiarism), trace 3f951a96. (1) Retrieval worked: the top three chunks are from the new plagiarism-and-ai-guidance.md, top score 0.7553, above the 0.70 floor. "
+               "(2) The guardrail fired correctly (injection_sentence_removed) and replaced the planted instruction with a marker. "
+               "(3) The extractive provider then answered 'The documents do not cover that question' (answered_from_context false). "
+               "(4) Only one sentence reached the 0.34 overlap needed (0.50): the harmless sentence after the removed one. But the marker ends in ']' with no full stop, so the splitter merged the two, and the provider drops any sentence that contains the marker. "
+               "(5) <b>Root cause: a sentence-boundary bug between guardrail and provider, not retrieval or the corpus.</b> Not fixed (a fix changes the baseline and needs a new gate run); not tested with a real LLM. Evidence: reports/evidence/D5-h05-evidence.md."))
+story.append(P("<b>Hand review.</b> Review sheets for the 19 synthetic golden questions and the 12 answers are in eval/review/. "
+               "<font color='#9b1c1c'>[PENDING abdy879: enter the verdicts and the agreement figure here after labelling; none are counted as done until entered]</font>"))
 story.append(P("Part E: drift and coverage", H2))
 story.append(P("Batch B ingested, suite re-run in state AB (eval/results/DRIFT-A-vs-AB.md). The five questions that need Batch B (h06-h10) enlarge the denominator, so the aggregates are not comparable; on the 23 common questions: "
                "fee questions q04 and e02 now answered from the 2027-28 fee page (intended); h02 recall falls to 0 because its golden label still names the old fee page (label to update); "
                "i01 and h03 MRR 1.0 to 0.5 and h05 abstains because the new plagiarism note competes in ranking (real degradation). "))
-story.append(P(PART_E, PEND))
+story.append(P(PART_E))
 
 story.append(P("Part F: Kubernetes (minikube, namespace ragops)", H2))
 story.append(table([
@@ -139,10 +166,11 @@ story.append(table([
 
 # ---------------------------------------------------------------- short answers etc
 story.append(P("4. Short answers (a)-(f)", H1))
-story.append(P(SHORT_ANSWERS, PEND))
+for _a in SHORT_ANSWERS:
+    story.append(P(_a))
 story.append(P("5. Contributions and AI statement", H1))
 story.append(table(CONTRIBUTIONS, [40, 140]))
-story.append(P(f"<b>AI statement:</b> {AI_STATEMENT}", PEND))
+story.append(P(f"<b>AI statement:</b> {AI_STATEMENT}"))
 
 # ---------------------------------------------------------------- appendix
 story.append(PageBreak())
@@ -155,7 +183,7 @@ story.append(table([
     ["B", "Evaluation summary, all three levels", "eval/results/suite-baseline-*.md"],
     ["C", "Gate failing and passing", "F3-gate-fail-chunk200-job.txt, F3-gate-pass-topk3-job.txt"],
     ["D", "One full trace; tool rebuilding the prompt", "D2-trace-inspector-guardrail.txt, traces/logs/k8s/*.jsonl"],
-    ["E", "Coverage before and after", "[PENDING member 2]"],
+    ["E", "Coverage before and after", "eval/results/COVERAGE-before-vs-after.md; coverage command with --label before / --label after"],
     ["F", "get all,pvc,configmap,cronjob,job; ingest and eval Job logs; gate change after ConfigMap edit; rollout status and undo with trace",
      "F1-cluster-state.txt, F2-ingest-batch-a-job.txt, F2-threshold-change-gate-pass.txt, F4-F6"],
 ], [12, 70, 98]))
