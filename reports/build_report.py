@@ -15,7 +15,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
-from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import Image, KeepTogether, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 OUT = Path(__file__).resolve().parent / "assignment_03_report.pdf"
 
@@ -181,15 +181,27 @@ story.append(P(f"<b>AI statement:</b> {AI_STATEMENT}"))
 # ---------------------------------------------------------------- appendix
 story.append(PageBreak())
 story.append(P("Appendix: screenshots A-F", H1))
-story.append(P("The assignment requires screenshots from the group's own terminal. <b>None are included yet.</b> The text below lists the committed, "
-               "unmodified output of each command (reports/evidence/) to be screenshotted; reports/evidence/CAPTURE_CHECKLIST.md gives the exact command for each.", B))
+SHOTS = Path(__file__).resolve().parent / "evidence" / "screenshots"
+SHOT_LIST = [
+    ("A1", "Batch B verification report: 8 PASS, 10 FAIL, with the reason per check (command: Get-Content eval/results/ingestion/verification-20261122T172354Z-batchB-first.md). The screenshot shows the report file written by the 22 Nov ingestion run."),
+    ("A2", "Second ingestion run on the unchanged Batch A corpus: chunks_embedded 0, nothing new or changed (result file of the 22 Nov run, ingest-20261122T124228Z-batchA-second.json). The same 0-chunk result on the cluster is in reports/evidence/F2-cronjob-manual-run.txt."),
+    ("B", "Evaluation summary with the three levels (module, component, end-to-end), noise tests and run-to-run difference: eval/results/suite-baseline-20261122T125448Z.md (state A, 29 golden questions at that time)."),
+    ("E1", "Coverage before: 34 golden questions, 40 live queries, 47.5% (live run on 24 Nov with nomic-embed-text; exits non-zero below 85%)."),
+    ("E2", "Coverage after adding golden questions n01-n24 and live queries l41-l46: 58 golden, 46 live, 82.6% (live run, still below the 85% requirement)."),
+]
+shown = []
+for label, caption in SHOT_LIST:
+    img = SHOTS / f"{label}.png"
+    if not img.exists():
+        continue
+    shown.append(label)
+    story.append(KeepTogether([P(f"<b>{label}.</b> {caption}", B), Image(str(img), width=180 * mm, height=180 * mm * 9 / 16), Spacer(1, 4 * mm)]))
+story.append(P("Screenshots still to add (from the cluster): C gate failing and passing, D one full trace and the trace tool, F cluster state, Job logs, ConfigMap edit, rollout status and undo. "
+               "The committed text output of these runs is listed below.", B))
 story.append(table([
-    ["Item", "Required", "Text evidence (screenshot [PENDING])"],
-    ["A", "Batch B verification report; second run 0 chunks", "eval/results/ingestion/verification-*batchB*.md, A1-batch-b-ingest-k8s.txt, F2-cronjob-manual-run.txt"],
-    ["B", "Evaluation summary, all three levels", "eval/results/suite-baseline-*.md"],
+    ["Item", "Required", "Text evidence (screenshot <font color='#9b1c1c'>[PENDING]</font>)"],
     ["C", "Gate failing and passing", "F3-gate-fail-chunk200-job.txt, F3-gate-pass-topk3-job.txt"],
     ["D", "One full trace; tool rebuilding the prompt", "D2-trace-inspector-guardrail.txt, traces/logs/k8s/*.jsonl"],
-    ["E", "Coverage before and after", "eval/results/COVERAGE-before-vs-after.md; coverage command with --label before / --label after; eval/results/coverage-round2-*.md"],
     ["F", "get all,pvc,configmap,cronjob,job; ingest and eval Job logs; gate change after ConfigMap edit; rollout status and undo with trace",
      "F1-cluster-state.txt, F2-ingest-batch-a-job.txt, F2-threshold-change-gate-pass.txt, F4-F6"],
 ], [12, 70, 98]))
