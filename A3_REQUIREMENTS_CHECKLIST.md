@@ -23,7 +23,7 @@ Last updated: see git log. Rows owned by the second group member are marked (mem
 | Req | Implementation | Check | Evidence | Status |
 | --- | --- | --- | --- | --- |
 | Golden set >= 25: >= 15 answerable, >= 5 unanswerable, >= 5 hard | `eval/golden.jsonl` (34), `eval/build_golden.py` | `test_golden_set_meets_the_assignment_minimums` | file | PASS |
-| >= 8 human-written, labelled human/synthetic; >= 8 synthetic reviewed by hand | `author`, `reviewed` fields | 21 human (carried over from A2, group to confirm); 13 synthetic, `reviewed: false` | `eval/golden.jsonl` | PENDING (member 2: confirm human labels, review >= 8 synthetic) |
+| >= 8 human-written, labelled human/synthetic; >= 8 synthetic reviewed by hand | `author`, `reviewed` fields | 21 human (carried over from A2, group to confirm); 13 synthetic, `reviewed: false` | `eval/golden.jsonl` | PENDING (review sheet and AI pre-check ready in `eval/review/`; verdicts must be entered by a person) |
 | Module: >= 15 paraphrase vs >= 15 unrelated pairs, gap, time per chunk, determinism | `eval/embedding_pairs.json`, `ragops/evaluation/embedding_eval.py` | suite result | `eval/results/suite-baseline-*.json` | PASS |
 | Component: recall@3/@5, MRR, nDCG@5 | `ragops/evaluation/retrieval_eval.py`, `common.py` | unit tests with known values; suite | suite result | PASS |
 | Noise test (>= 3 irrelevant documents or typos), change reported | `retrieval_eval.noise_client`, `typo_query` (both done) | suite result `delta_vs_clean` | suite result | PASS |
@@ -48,16 +48,16 @@ Last updated: see git log. Rows owned by the second group member are marked (mem
 | D2 tool: trace id -> exact context and prompt | `ragops/tracing/inspector.py` | `test_trace_inspector_rebuilds_the_exact_prompt` (hash match) | inspector output | PASS |
 | D3 metrics: top-1 similarity, abstention rate, cache hit rate, p95 per stage, injections flagged; summary script | `ragops/tracing/summary.py`, `api/app/routes/metrics.py` (`/metrics`) | `test_summary_script...` | `traces/metrics/` | PASS (cache rate on the cluster) |
 | D4 injection guardrail writes its action into the trace; tested with the Batch B document | `neutralise_injection` -> `tracing.guardrail` | `test_injection_in_a_passage_is_neutralised_and_logged`; Batch B run | trace | PASS (unit); real Batch B trace PENDING |
-| D5 root cause from a trace only, 5 lines | `report` | | | PENDING (member 2 reviews) |
+| D5 root cause from a trace only, 5 lines | `reports/evidence/D5-h05-evidence.md` | trace 3f951a96 | report section 3 | PASS (written in report; member 2 to confirm wording) |
 
 ## Part E: drift and coverage (member 2)
 
 | Req | Implementation | Status |
 | --- | --- | --- |
-| E1 >= 40 live queries (28 in-domain, 12 uncovered) | `eval/live_queries/` | PENDING (member 2) |
-| E2 coverage vs golden set, threshold justified, uncovered topics | `ragops/evaluation/coverage.py` (code by member 1) | code PENDING, data PENDING |
+| E1 >= 40 live queries (34 in-domain, 6 outside) | `eval/live_queries/` | PASS (40 queries, drafted with AI help, status pending-review) |
+| E2 coverage vs golden set, threshold justified, uncovered topics | `ragops/evaluation/coverage.py` (code by member 1) | PASS: coverage before 47.5%, after 52.5% (`eval/results/COVERAGE-before-vs-after.md`); 85% target not met |
 | E3 ingest Batch B, re-run suite, report what changed and why | suite `--state AB`; golden `after_batch_b` | PASS: `eval/results/DRIFT-A-vs-AB.md` (golden h02 label needs an `after_batch_b` override: member 2) |
-| E4 >= 6 new golden questions, coverage rises, non-zero exit below threshold | `coverage.py` exit code | PENDING (member 2) |
+| E4 >= 6 new golden questions, coverage rises, non-zero exit below threshold | `coverage.py` exit code | PASS (n01-n06; 47.5% to 52.5%; exit non-zero because below 85%) |
 
 ## Part F: Kubernetes
 
@@ -74,7 +74,7 @@ Last updated: see git log. Rows owned by the second group member are marked (mem
 
 | Req | Status |
 | --- | --- |
-| Report PDF <= 8 pages (Figure 3 table, Table 2 table, results + release decision, short answers a-f, contributions + AI statement) | PENDING |
+| Report PDF <= 8 pages (Figure 3 table, Table 2 table, results + release decision, short answers a-f, contributions + AI statement) | PASS (4 pages; names, roll numbers and screenshots still PENDING) |
 | Names and roll numbers on page 1 | PENDING (need from the group) |
 | Screenshots appendix A-F | PENDING (text evidence captured by script; real screenshots need the group) |
 | README with the command for each part A-F | PENDING |

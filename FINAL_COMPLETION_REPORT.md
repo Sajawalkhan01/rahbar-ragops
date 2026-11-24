@@ -8,10 +8,10 @@ Nothing below is marked PASS without an evidence file. Details per requirement: 
 | A Data management | **PASS** | `eval/results/ingestion/`, `reports/evidence/A1-*`, `A2-incremental-demo.txt`, `tests/test_ingestion.py` (19 tests) | Batch B hand review of dispositions (member 2) |
 | B Offline testing | **PASS** | `eval/results/suite-baseline-*.json/.md` (run twice, quality diff 0.0) | Confirm golden labels, hand-review >= 8 synthetic questions (member 2); no LLM judge, so no judge-agreement step |
 | C Experiment + gate | **PASS** | 3 candidates + bad; `gate-*.json`; cluster `F3-*` | none |
-| D Observability | **PASS** (code, traces, inspector, summary) / **PENDING** D5 | `traces/`, `D2`, `D3` evidence | D5 root-cause write-up (member 2) |
-| E Drift and coverage | **PARTIAL** | drift run `eval/results/DRIFT-A-vs-AB.md`; coverage code + tests | live queries (>= 40), coverage before/after, >= 6 new golden questions (member 2) |
+| D Observability | **PASS** | `traces/`, `D2`, `D3`, `D5-h05-evidence.md` | h05 bug (marker merges with next sentence) found, not fixed |
+| E Drift and coverage | **PASS** (target not met) | `DRIFT-A-vs-AB.md`, `COVERAGE-before-vs-after.md`; 40 live queries, golden n01-n06 | coverage 52.5% against an 85% target; live queries are AI-drafted, not real traffic |
 | F Kubernetes | **PASS** with stated gaps | `k8s/`, `k8s/README.md`, `reports/evidence/F1`-`F7` | no two-writer test in the cluster; Job resource peaks not measured; `eval-candidate-bad` not run in the cluster |
-| G Report | **PARTIAL** | `reports/assignment_03_report.pdf` (3 pages), `reports/build_report.py` | names/roll numbers, short answers, contributions, AI statement, Part E, real screenshots (all members) |
+| G Report | **PARTIAL** | `reports/assignment_03_report.pdf` (4 pages), `reports/build_report.py` | names and roll numbers, human review verdicts, real screenshots |
 
 ## The 12 points
 
