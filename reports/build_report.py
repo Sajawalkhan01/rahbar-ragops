@@ -38,12 +38,14 @@ SHORT_ANSWERS = [
     "API Deployment with RollingUpdate and maxUnavailable 0: releases without downtime; rollout undo and change-cause annotations: rollback and history. PVC ragops-traces: traceability. Candidate Deployment and Service on rahbar_c200: an isolated candidate index. "
     "Limit: a two-writers-at-once test was not run in the cluster.",
 ]
-CONTRIBUTIONS = [["Member", "What they did (from git log)"],
-                 ["Sajawalkhan01", "Parts A-D code and runs (verification, quarantine, incremental ingest, evaluation suite, gate, tracing), the 18-file Batch B set, Part F (Kubernetes manifests, Jobs, rollout and rollback demos, cluster evidence), report builder; 24 commits."],
-                 ["abdy879", "Part E: 40 live queries, coverage before and after, golden questions n01-n06; review sheets for the synthetic golden questions and the 12 answer labels; D5 analysis of h05; short answers; 15 commits including merges of PRs #1-#5."]]
-AI_STATEMENT = ("Claude Code (Anthropic) wrote most of the code, manifests and first drafts of documents, and ran the commands; details in docs/AI-USAGE.md. "
-                "The group chose the scope, ran and approved the commands, reviewed pull requests, and checked results against committed output. "
-                "The live queries, review sheets and drafts of the short answers were also prepared with AI help and then edited by the group.")
+CONTRIBUTIONS = [["Member", "What they did (from git log on main, counted 24 Nov)"],
+                 ["Sajawalkhan01", "Parts A-D code and runs (verification, quarantine, incremental ingest, evaluation suite, gate, tracing), the 18-file Batch B set, Part F (Kubernetes manifests, Jobs, rollout and rollback demos, cluster evidence), report builder, the coverage re-run with Ollama; 27 commits authored under his email, plus 6 pull-request merges."],
+                 ["abdy879", "Part E and review work: live queries, coverage before and after, golden questions n01-n24, review sheets for the synthetic golden questions and the 12 answer labels, D5 analysis of h05, short answers. "
+                             "GitHub links 4 commits to his account (the merges of pull requests #1, #2, #4 and #5, with his review approvals). 15 further commits carry the name abdy879 but a placeholder email, so GitHub does not credit them to his account; "
+                             "they were created on the group's shared machine with AI help. His hand review (10 synthetic questions ok, 12 answer labels) is recorded under his name; the remaining 27 synthetic questions and all 46 live queries are still unreviewed."]]
+AI_STATEMENT = ("Claude Code (Anthropic) wrote most of the code, manifests and first drafts of documents, the live queries, golden questions n07-n24 and the review pre-checks, and ran the commands; details in docs/AI-USAGE.md. "
+                "The group chose the scope, approved the commands, reviewed pull requests and checked results against committed output. "
+                "Items drafted by the assistant and not yet checked by a member are marked as unreviewed in the data files and in this report.")
 PART_E = ("<b>Coverage (E1, E2, E4).</b> Live queries were compared with the golden set at cosine threshold 0.78 (nomic-embed-text, the pipeline's own embedder); the requirement is 85% covered. All live queries were drafted with AI help, not real traffic. "
           "<b>Round 1:</b> 40 live queries (34 in-domain, 6 outside the corpus). Before: 34 golden questions, 19 of 40 covered (47.5%; in-domain 50.0%), mean best similarity 0.7456. We added n01-n06 (library, scholarship, exam rules). "
           "After: 40 golden, 21 of 40 covered (<b>52.5%</b>; in-domain 55.9%), mean 0.7735. We re-ran both on 24 Nov with a freshly installed Ollama and got identical counts. "
