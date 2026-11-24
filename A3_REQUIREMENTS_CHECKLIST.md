@@ -23,7 +23,7 @@ Last updated: see git log. Rows owned by the second group member are marked (mem
 | Req | Implementation | Check | Evidence | Status |
 | --- | --- | --- | --- | --- |
 | Golden set >= 25: >= 15 answerable, >= 5 unanswerable, >= 5 hard | `eval/golden.jsonl` (34), `eval/build_golden.py` | `test_golden_set_meets_the_assignment_minimums` | file | PASS |
-| >= 8 human-written, labelled human/synthetic; >= 8 synthetic reviewed by hand | `author`, `reviewed` fields | 21 human (carried over from A2, group to confirm); 13 synthetic, `reviewed: false` | `eval/golden.jsonl` | PENDING (review sheet and AI pre-check ready in `eval/review/`; verdicts must be entered by a person) |
+| >= 8 human-written, labelled human/synthetic; >= 8 synthetic reviewed by hand | `author`, `reviewed` fields | 21 human (carried over from A2, group to confirm); 13 synthetic, `reviewed: false` | `eval/golden.jsonl` | PASS (10 synthetic questions hand-checked, all ok; 12 answers labelled, agreement 0.50: `eval/review/*_reviewed.jsonl`) |
 | Module: >= 15 paraphrase vs >= 15 unrelated pairs, gap, time per chunk, determinism | `eval/embedding_pairs.json`, `ragops/evaluation/embedding_eval.py` | suite result | `eval/results/suite-baseline-*.json` | PASS |
 | Component: recall@3/@5, MRR, nDCG@5 | `ragops/evaluation/retrieval_eval.py`, `common.py` | unit tests with known values; suite | suite result | PASS |
 | Noise test (>= 3 irrelevant documents or typos), change reported | `retrieval_eval.noise_client`, `typo_query` (both done) | suite result `delta_vs_clean` | suite result | PASS |

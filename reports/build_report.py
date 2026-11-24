@@ -20,7 +20,7 @@ from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, 
 OUT = Path(__file__).resolve().parent / "assignment_03_report.pdf"
 
 # ---- PLACEHOLDERS: only the group can fill these -------------------------------------------------------
-MEMBERS = "[PENDING: member 1 name, roll no.]  /  [PENDING: member 2 name, roll no.]"
+MEMBERS = "Muhammad Sajawal Khan (24K-3068)  /  Muhammad Abdullah (24I-3141)"
 REPO = "https://github.com/Sajawalkhan01/rahbar-ragops"
 SHORT_ANSWERS = [
     "<b>(a) Which Batch B check caught the most, what got through, what would catch it?</b> Uniqueness caught the most: 4 of the 10 failures (exact copy, reformatted copy, draft near-duplicate, scholarship copy); quality and completeness caught 3 each, recency 1. "
@@ -144,8 +144,10 @@ story.append(P("400 traces summarised (eval runs): abstention rate 0.35, cache h
                "(3) The extractive provider then answered 'The documents do not cover that question' (answered_from_context false). "
                "(4) Only one sentence reached the 0.34 overlap needed (0.50): the harmless sentence after the removed one. But the marker ends in ']' with no full stop, so the splitter merged the two, and the provider drops any sentence that contains the marker. "
                "(5) <b>Root cause: a sentence-boundary bug between guardrail and provider, not retrieval or the corpus.</b> Not fixed (a fix changes the baseline and needs a new gate run); not tested with a real LLM. Evidence: reports/evidence/D5-h05-evidence.md."))
-story.append(P("<b>Hand review.</b> Review sheets for the 19 synthetic golden questions and the 12 answers are in eval/review/. "
-               "<font color='#9b1c1c'>[PENDING abdy879: enter the verdicts and the agreement figure here after labelling; none are counted as done until entered]</font>"))
+story.append(P("<b>Hand review.</b> 10 of the 19 synthetic golden questions were checked by hand against their source files (h06-h09, n01-n06): all 10 verdict ok (eval/review/synthetic_review_sheet_reviewed.jsonl). "
+               "12 answers were labelled for faithfulness by hand (eval/review/answer_labels_reviewed.jsonl): 6 faithful, 6 not faithful (q03, q04, q08, q09, v01, v03). "
+               "The automatic lexical score called all 12 faithful (1.0), so <b>agreement is 6 of 12 = 0.50</b>. "
+               "The automatic score is too lenient: it rewards copied text even when the answer mixes years, misses part of the question, or is not supported by the cited source."))
 story.append(P("Part E: drift and coverage", H2))
 story.append(P("Batch B ingested, suite re-run in state AB (eval/results/DRIFT-A-vs-AB.md). The five questions that need Batch B (h06-h10) enlarge the denominator, so the aggregates are not comparable; on the 23 common questions: "
                "fee questions q04 and e02 now answered from the 2027-28 fee page (intended); h02 recall falls to 0 because its golden label still names the old fee page (label to update); "
