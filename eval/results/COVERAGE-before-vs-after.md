@@ -41,3 +41,20 @@ Raw results: `coverage-before-new-golden-20261123T193716Z.*` and `coverage-after
   research paper counts, missed exams.
 * **Next step if the 85% target matters:** add golden questions for those topics. Each needs an answer taken from the
   documents; a topic with no document should become an `unanswerable` question instead. Correction: missed exams DO have a rule (2026 academic rules, section 5.13, p.25), so golden n11 is answerable. Round 2 (n07-n24, l41-l46) was added but coverage has not been re-run: the Ollama embedder was not available.
+
+## Round 2 (24 Nov): reproduction and new questions
+
+Re-run with a fresh Ollama install and `nomic-embed-text`, threshold 0.78, required share 85%. Inputs are in `coverage-inputs/`.
+
+| Run | Golden | Live | Covered | Coverage | In-domain | Mean best sim. |
+| --- | --- | --- | --- | --- | --- | --- |
+| repro-before (matches round 1) | 34 | 40 | 19 | 47.5% | 50.0% | 0.7456 |
+| repro-after (matches round 1) | 40 | 40 | 21 | 52.5% | 55.9% | 0.7735 |
+| **round2** (n07-n24, l41-l46 added) | 58 | 46 | 38 | **82.6%** | 88.2% | 0.8519 |
+
+The earlier round-1 numbers reproduce exactly, so they were real measurements.
+
+Round 2 is still **below the 85% requirement** (39 of 46 needed; the script exits 1). Uncovered: four in-domain queries
+(AI use in a thesis 0.749, scholarship renewal 0.648, fee increase vs last year 0.684, research paper counts 0.717) and four
+outside the corpus (weather, passport, restaurant, cricket). The gain is partly circular (the new questions were written after
+seeing the uncovered list), n07-n24 are AI-drafted and unreviewed, and the live queries are not real traffic.

@@ -31,7 +31,7 @@ SHORT_ANSWERS = [
     "<b>(c) Archive or delete old versions?</b> We archive. A superseded version stays as metadata (superseded=True, status=archived) with its raw file under archive/, and rollback restores it (A2-incremental-demo.txt). "
     "If the archive were deleted, rollback would be impossible and old answers and traces could not be reproduced, because the version they cite would be gone.",
     "<b>(d) Which metric do we trust least?</b> Faithfulness. It is a lexical overlap score and is 1.0 by construction with the extractive generator, since every answer is copied from the context. Answer correctness (word overlap with a reference) is also weak, and the golden set is small (34; 23 retrieval questions), so one question moves recall@5 by about 0.04.",
-    "<b>(e) Which paper idea was hardest to apply, and what did we change?</b> Live testing and coverage checking, because they assume real users and we had none. The 40 live queries were drafted by hand, so the coverage result (47.5% rising to 52.5%, below the 85% target) says more about our drafted queries than about real usage; we reported it as such. "
+    "<b>(e) Which paper idea was hardest to apply, and what did we change?</b> Live testing and coverage checking, because they assume real users and we had none. The 40 live queries were drafted by hand, so the coverage result (47.5% rising to 52.5%, then 82.6% after a second round of golden questions, still below the 85% target) says more about our drafted queries than about real usage; we reported it as such. "
     "We also could not run a real LLM usefully on a CPU (0 of 6 answers accepted, LLM-SPOTCHECK.md), so we changed the suite to a deterministic extractive generator and said which metric that makes weak (faithfulness).",
     "<b>(f) Which Kubernetes object carries which responsibility?</b> Single writer: only the ingestion Job and CronJob mount the data volume read-write and set RAGOPS_ROLE=ingestor; the CronJob uses concurrencyPolicy Forbid; the API Deployment does not mount that volume. "
     "StatefulSet chroma and its PVC: vector-store persistence. ConfigMap ragops-config: the embedding model, stated once for every pod. ConfigMap release-thresholds: the gate policy. Eval Jobs: the gate (a failing gate fails the Job and stops the release). "
@@ -44,11 +44,13 @@ CONTRIBUTIONS = [["Member", "What they did (from git log)"],
 AI_STATEMENT = ("Claude Code (Anthropic) wrote most of the code, manifests and first drafts of documents, and ran the commands; details in docs/AI-USAGE.md. "
                 "The group chose the scope, ran and approved the commands, reviewed pull requests, and checked results against committed output. "
                 "The live queries, review sheets and drafts of the short answers were also prepared with AI help and then edited by the group.")
-PART_E = ("<b>Coverage (E1, E2, E4).</b> 40 live queries (34 in-domain, 6 outside the corpus; drafted with AI help, not real traffic) were compared with the golden set at cosine threshold 0.78; the requirement is 85% covered. "
-          "Before: 34 golden questions, 19 of 40 covered (47.5%; in-domain 50.0%), mean best similarity 0.7456. We added six golden questions n01-n06 (library fines, lost books, merit scholarship, exam reporting time, allowed items, rechecking). "
-          "After: 40 golden questions, 21 of 40 covered (<b>52.5%</b>; in-domain 55.9%), mean 0.7735. Two queries (library fine and lost book) became covered; five more moved closer but stay below 0.78. "
-          "<b>The 85% target is still not met</b>, and the checker exits non-zero. The gain is partly circular (n01-n06 were written after seeing which queries were uncovered) and the live queries are drafted, not real traffic. "
-          "<b>Limits:</b> only 6 of the 40 queries are outside the corpus (the brief suggests about 12), so the uncovered share is understated; all 40 were drafted with AI help and not reviewed against real users. Topics still uncovered: internship, ChatGPT in assignments, repeating a course, admission freeze, distinction CGPA, scholarship renewal. Evidence: eval/results/COVERAGE-before-vs-after.md.")
+PART_E = ("<b>Coverage (E1, E2, E4).</b> Live queries were compared with the golden set at cosine threshold 0.78 (nomic-embed-text, the pipeline's own embedder); the requirement is 85% covered. All live queries were drafted with AI help, not real traffic. "
+          "<b>Round 1:</b> 40 live queries (34 in-domain, 6 outside the corpus). Before: 34 golden questions, 19 of 40 covered (47.5%; in-domain 50.0%), mean best similarity 0.7456. We added n01-n06 (library, scholarship, exam rules). "
+          "After: 40 golden, 21 of 40 covered (<b>52.5%</b>; in-domain 55.9%), mean 0.7735. We re-ran both on 24 Nov with a freshly installed Ollama and got identical counts. "
+          "<b>Round 2:</b> we added 6 live queries outside the corpus (46 live queries, 12 outside, as the brief asks) and 18 golden questions n07-n24 (12 answerable or hard on the uncovered topics, 6 must-abstain). Result: 58 golden, 38 of 46 covered (<b>82.6%</b>; in-domain 88.2%), mean 0.8519. "
+          "<b>The 85% target is still not met</b> and the checker exits non-zero; 39 of 46 were needed. The 8 uncovered queries: four in-domain (AI use in a thesis, automatic scholarship renewal, fee increase over last year, research paper counts) and four outside the corpus (weather, passport, restaurant, cricket). "
+          "<b>Limits:</b> the gain is partly circular (n01-n24 were written after seeing which queries were uncovered); n07-n24 are AI-drafted and not yet hand-reviewed; the queries are not real traffic. One earlier claim was wrong: missed exams do have a rule (academic rules, section 5.13, p.25), so n11 is answerable. "
+          "Evidence: eval/results/COVERAGE-before-vs-after.md and coverage-repro-before/after and coverage-round2 files.")
 # --------------------------------------------------------------------------------------------------------
 
 ss = getSampleStyleSheet()
@@ -93,7 +95,7 @@ story.append(table([
     ["Update retrieval sources", "Embeds only changed chunks (chunk-text hash reuse), deletes stale chunks, archives by metadata; rollback; orphan audit; single-writer lock", "ragops/ingestion/incremental.py, ragops/vectorstore.py", "One embedding model; no re-embedding migration tool"],
     ["Offline testing", "Embedding, retrieval (recall@3/5, MRR, nDCG@5, noise) and end-to-end suite, run twice, one command; release gate", "ragops/evaluation/suite.py, ragops/gate.py", "Faithfulness is lexical; no LLM judge; golden set is small (34)"],
     ["Live testing", "One JSON trace per query, inspector rebuilds the prompt, metrics, guardrail log, summary", "api/app/tracing.py, ragops/tracing/", "No online A/B or user feedback capture"],
-    ["Check coverage", "Embeds live queries and compares to the golden set; exit non-zero below a threshold", "ragops/evaluation/coverage.py", "Coverage 52.5% after n01-n06, below the 85% target (Part E)"],
+    ["Check coverage", "Embeds live queries and compares to the golden set; exit non-zero below a threshold", "ragops/evaluation/coverage.py", "Coverage 47.5% to 52.5% (round 1), 82.6% after n07-n24 (round 2); still below the 85% target (Part E)"],
 ], [22, 74, 44, 40]))
 
 # ---------------------------------------------------------------- G2
@@ -185,7 +187,7 @@ story.append(table([
     ["B", "Evaluation summary, all three levels", "eval/results/suite-baseline-*.md"],
     ["C", "Gate failing and passing", "F3-gate-fail-chunk200-job.txt, F3-gate-pass-topk3-job.txt"],
     ["D", "One full trace; tool rebuilding the prompt", "D2-trace-inspector-guardrail.txt, traces/logs/k8s/*.jsonl"],
-    ["E", "Coverage before and after", "eval/results/COVERAGE-before-vs-after.md; coverage command with --label before / --label after"],
+    ["E", "Coverage before and after", "eval/results/COVERAGE-before-vs-after.md; coverage command with --label before / --label after; eval/results/coverage-round2-*.md"],
     ["F", "get all,pvc,configmap,cronjob,job; ingest and eval Job logs; gate change after ConfigMap edit; rollout status and undo with trace",
      "F1-cluster-state.txt, F2-ingest-batch-a-job.txt, F2-threshold-change-gate-pass.txt, F4-F6"],
 ], [12, 70, 98]))
