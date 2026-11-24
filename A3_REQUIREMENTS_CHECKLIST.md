@@ -54,7 +54,7 @@ Last updated: see git log. Rows owned by the second group member are marked (mem
 
 | Req | Implementation | Status |
 | --- | --- | --- |
-| E1 >= 40 live queries (34 in-domain, 6 outside) | `eval/live_queries/` | PASS (40 queries, drafted with AI help, status pending-review) |
+| E1 >= 40 live queries (34 in-domain, 6 outside) | `eval/live_queries/` | PARTIAL: 40 queries, but only 6 are outside the corpus (brief asks for about 12); AI-drafted, status pending-review |
 | E2 coverage vs golden set, threshold justified, uncovered topics | `ragops/evaluation/coverage.py` (code by member 1) | PASS: coverage before 47.5%, after 52.5% (`eval/results/COVERAGE-before-vs-after.md`); 85% target not met |
 | E3 ingest Batch B, re-run suite, report what changed and why | suite `--state AB`; golden `after_batch_b` | PASS: `eval/results/DRIFT-A-vs-AB.md` (golden h02 label needs an `after_batch_b` override: member 2) |
 | E4 >= 6 new golden questions, coverage rises, non-zero exit below threshold | `coverage.py` exit code | PASS (n01-n06; 47.5% to 52.5%; exit non-zero because below 85%) |
@@ -77,5 +77,5 @@ Last updated: see git log. Rows owned by the second group member are marked (mem
 | Report PDF <= 8 pages (Figure 3 table, Table 2 table, results + release decision, short answers a-f, contributions + AI statement) | PASS (4 pages; names, roll numbers and screenshots still PENDING) |
 | Names and roll numbers on page 1 | PENDING (need from the group) |
 | Screenshots appendix A-F | PENDING (text evidence captured by script; real screenshots need the group) |
-| README with the command for each part A-F | PENDING |
-| Commits from both members | PENDING (member 2 pushes their own commits) |
+| README with the command for each part A-F | PASS (`README.md`, "The commands, in execution order") |
+| Commits from both members | PASS (`git log`: both members have commits) |
