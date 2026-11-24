@@ -48,7 +48,7 @@ PART_E = ("<b>Coverage (E1, E2, E4).</b> 40 live queries (34 in-domain, 6 outsid
           "Before: 34 golden questions, 19 of 40 covered (47.5%; in-domain 50.0%), mean best similarity 0.7456. We added six golden questions n01-n06 (library fines, lost books, merit scholarship, exam reporting time, allowed items, rechecking). "
           "After: 40 golden questions, 21 of 40 covered (<b>52.5%</b>; in-domain 55.9%), mean 0.7735. Two queries (library fine and lost book) became covered; five more moved closer but stay below 0.78. "
           "<b>The 85% target is still not met</b>, and the checker exits non-zero. The gain is partly circular (n01-n06 were written after seeing which queries were uncovered) and the live queries are drafted, not real traffic. "
-          "Topics still uncovered: internship, ChatGPT in assignments, repeating a course, admission freeze, distinction CGPA, scholarship renewal. Evidence: eval/results/COVERAGE-before-vs-after.md.")
+          "<b>Limits:</b> only 6 of the 40 queries are outside the corpus (the brief suggests about 12), so the uncovered share is understated; all 40 were drafted with AI help and not reviewed against real users. Topics still uncovered: internship, ChatGPT in assignments, repeating a course, admission freeze, distinction CGPA, scholarship renewal. Evidence: eval/results/COVERAGE-before-vs-after.md.")
 # --------------------------------------------------------------------------------------------------------
 
 ss = getSampleStyleSheet()
@@ -147,7 +147,7 @@ story.append(P("400 traces summarised (eval runs): abstention rate 0.35, cache h
 story.append(P("<b>Hand review.</b> 10 of the 19 synthetic golden questions were checked by hand against their source files (h06-h09, n01-n06): all 10 verdict ok (eval/review/synthetic_review_sheet_reviewed.jsonl). "
                "12 answers were labelled for faithfulness by hand (eval/review/answer_labels_reviewed.jsonl): 6 faithful, 6 not faithful (q03, q04, q08, q09, v01, v03). "
                "The automatic lexical score called all 12 faithful (1.0), so <b>agreement is 6 of 12 = 0.50</b>. "
-               "The automatic score is too lenient: it rewards copied text even when the answer mixes years, misses part of the question, or is not supported by the cited source."))
+               "The low agreement is expected: the automatic score is lexical overlap with the retrieved text, while the human label asks whether the claim is supported by the cited source, so copied text from the wrong year or an unrelated rule still scores 1.0. The automatic score is too lenient: it rewards copied text even when the answer mixes years, misses part of the question, or is not supported by the cited source."))
 story.append(P("Part E: drift and coverage", H2))
 story.append(P("Batch B ingested, suite re-run in state AB (eval/results/DRIFT-A-vs-AB.md). The five questions that need Batch B (h06-h10) enlarge the denominator, so the aggregates are not comparable; on the 23 common questions: "
                "fee questions q04 and e02 now answered from the 2027-28 fee page (intended); h02 recall falls to 0 because its golden label still names the old fee page (label to update); "
