@@ -38,10 +38,10 @@ SHORT_ANSWERS = [
     "API Deployment with RollingUpdate and maxUnavailable 0: releases without downtime; rollout undo and change-cause annotations: rollback and history. PVC ragops-traces: traceability. Candidate Deployment and Service on rahbar_c200: an isolated candidate index. "
     "Limit: a two-writers-at-once test was not run in the cluster.",
 ]
-CONTRIBUTIONS = [["Member", "What they did (from git log on main, counted 24 Nov)"],
-                 ["Sajawalkhan01", "Parts A-D code and runs (verification, quarantine, incremental ingest, evaluation suite, gate, tracing), the 18-file Batch B set, Part F (Kubernetes manifests, Jobs, rollout and rollback demos, cluster evidence), report builder, the coverage re-run with Ollama; 27 commits authored under his email, plus 6 pull-request merges."],
+CONTRIBUTIONS = [["Member", "What they did (from git log on main, counted 25 Nov)"],
+                 ["Sajawalkhan01", "Parts A-D code and runs (verification, quarantine, incremental ingest, evaluation suite, gate, tracing), the 18-file Batch B set, Part F (Kubernetes manifests, Jobs, rollout and rollback demos, cluster evidence), report builder, the coverage re-run with Ollama; 30 commits authored under his email, plus 7 pull-request merges."],
                  ["abdy879", "Part E and review work: live queries, coverage before and after, golden questions n01-n24, review sheets for the synthetic golden questions and the 12 answer labels, D5 analysis of h05, short answers. "
-                             "GitHub links 4 commits to his account (the merges of pull requests #1, #2, #4 and #5, with his review approvals). 15 further commits carry the name abdy879 but a placeholder email, so GitHub does not credit them to his account; "
+                             "GitHub links 6 commits to his account (the merges of pull requests #1, #2, #4, #5, #12 and #14, with his review approvals). 15 further commits carry the name abdy879 but a placeholder email, so GitHub does not credit them to his account; "
                              "they were created on the group's shared machine with AI help. His hand review (10 synthetic questions ok, 12 answer labels) is recorded under his name; the remaining 27 synthetic questions and all 46 live queries are still unreviewed."]]
 AI_STATEMENT = ("Claude Code (Anthropic) wrote most of the code, manifests and first drafts of documents, the live queries, golden questions n07-n24 and the review pre-checks, and ran the commands; details in docs/AI-USAGE.md. "
                 "The group chose the scope, approved the commands, reviewed pull requests and checked results against committed output. "
