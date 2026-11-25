@@ -12,10 +12,12 @@ from __future__ import annotations
 from pathlib import Path
 
 from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
-from reportlab.platypus import Image, KeepTogether, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import (HRFlowable, Image, KeepTogether, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table,
+                                TableStyle)
 
 OUT = Path(__file__).resolve().parent / "assignment_03_report.pdf"
 
@@ -56,32 +58,89 @@ PART_E = ("<b>Coverage (E1, E2, E4).</b> Live queries were compared with the gol
 # --------------------------------------------------------------------------------------------------------
 
 ss = getSampleStyleSheet()
-B = ParagraphStyle("b", parent=ss["BodyText"], fontSize=8.3, leading=10.4, spaceAfter=3)
-H1 = ParagraphStyle("h1", parent=ss["Heading1"], fontSize=12.5, spaceBefore=6, spaceAfter=3)
-H2 = ParagraphStyle("h2", parent=ss["Heading2"], fontSize=9.8, spaceBefore=5, spaceAfter=2)
-CELL = ParagraphStyle("c", parent=B, fontSize=7.1, leading=8.6, spaceAfter=0)
-PEND = ParagraphStyle("p", parent=B, textColor=colors.HexColor("#9b1c1c"))
+SERIF, SERIF_B, SERIF_I = "Times-Roman", "Times-Bold", "Times-Italic"
+BLACK = colors.black
+B = ParagraphStyle("b", parent=ss["BodyText"], fontName=SERIF, fontSize=8.7, leading=10.8, spaceAfter=3.5,
+                   alignment=TA_JUSTIFY, textColor=BLACK)
+H1 = ParagraphStyle("h1", parent=ss["Heading1"], fontName=SERIF_B, fontSize=12.5, leading=15, spaceBefore=9,
+                    spaceAfter=2, textColor=BLACK)
+H2 = ParagraphStyle("h2", parent=ss["Heading2"], fontName=SERIF_B, fontSize=10.2, leading=12.5, spaceBefore=7,
+                    spaceAfter=3, textColor=BLACK)
+CELL = ParagraphStyle("c", parent=B, fontSize=7.5, leading=9.0, spaceAfter=0, alignment=0)
+CAP = ParagraphStyle("cap", parent=B, fontSize=8.4, leading=10.4, spaceAfter=3, alignment=0)
 
 
 def P(t, st=B):
     return Paragraph(t, st)
 
 
-def table(rows, widths, head=True, size=7.1):
-    data = [[Paragraph(str(c), CELL) for c in r] for r in rows]
+def table(rows, widths, head=True, size=7.8):
+    data = []
+    for i, r in enumerate(rows):
+        data.append([Paragraph(f"<b>{c}</b>" if (head and i == 0) else str(c), CELL) for c in r])
     t = Table(data, colWidths=[w * mm for w in widths], repeatRows=1 if head else 0)
-    style = [("GRID", (0, 0), (-1, -1), 0.3, colors.grey), ("VALIGN", (0, 0), (-1, -1), "TOP"),
-             ("LEFTPADDING", (0, 0), (-1, -1), 2.5), ("RIGHTPADDING", (0, 0), (-1, -1), 2.5),
-             ("TOPPADDING", (0, 0), (-1, -1), 1.5), ("BOTTOMPADDING", (0, 0), (-1, -1), 1.5)]
+    style = [("GRID", (0, 0), (-1, -1), 0.5, BLACK), ("VALIGN", (0, 0), (-1, -1), "TOP"),
+             ("LEFTPADDING", (0, 0), (-1, -1), 3), ("RIGHTPADDING", (0, 0), (-1, -1), 3),
+             ("TOPPADDING", (0, 0), (-1, -1), 2.2), ("BOTTOMPADDING", (0, 0), (-1, -1), 2.2),
+             ("BOX", (0, 0), (-1, -1), 1.0, BLACK)]
     if head:
-        style.append(("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e6e9ef")))
+        style.append(("LINEBELOW", (0, 0), (-1, 0), 1.2, BLACK))
     t.setStyle(TableStyle(style))
     return t
 
 
-story = []
-story += [P("Assignment 03: RAGOps for RAHBAR", ParagraphStyle("t", parent=ss["Title"], fontSize=17, spaceAfter=4)),
-          P(f"<b>Group:</b> {MEMBERS}"), P(f"<b>Repository:</b> {REPO}"),
+def framed(img):
+    f = Table([[img]], colWidths=[img.drawWidth + 2 * mm])
+    f.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 0.8, BLACK), ("LEFTPADDING", (0, 0), (-1, -1), 1 * mm),
+                           ("RIGHTPADDING", (0, 0), (-1, -1), 1 * mm), ("TOPPADDING", (0, 0), (-1, -1), 1 * mm),
+                           ("BOTTOMPADDING", (0, 0), (-1, -1), 1 * mm)]))
+    return f
+
+
+# ---------------------------------------------------------------- cover page
+ASSETS = Path(__file__).resolve().parent / "assets"
+COVER_DATE = "25 November 2026"
+
+
+def CT(size, font=SERIF_B, lead=None, after=0):
+    return ParagraphStyle(f"ct{size}{font}{after}", fontName=font, fontSize=size, leading=lead or size * 1.25,
+                          alignment=TA_CENTER, textColor=BLACK, spaceAfter=after)
+
+
+def rule(thick):
+    return HRFlowable(width="70%", thickness=thick, color=BLACK, spaceBefore=0, spaceAfter=0, hAlign="CENTER")
+
+
+cover = [Spacer(1, 12 * mm)]
+if (ASSETS / "nuces-logo.png").exists():
+    logo = Image(str(ASSETS / "nuces-logo.png"), width=40 * mm, height=40 * mm * 148 / 151)
+    logo.hAlign = "CENTER"
+    cover += [logo, Spacer(1, 6 * mm)]
+cover += [Paragraph("National University of Computer &amp; Emerging Sciences", CT(17, lead=21)),
+          Paragraph("(FAST-NUCES), Islamabad", CT(13, SERIF, after=2)),
+          Spacer(1, 2 * mm), Paragraph("Department of Software Engineering", CT(13, SERIF)),
+          Spacer(1, 7 * mm), rule(1.4), Spacer(1, 1.2 * mm), rule(0.4), Spacer(1, 11 * mm),
+          Paragraph("ASSIGNMENT 03", CT(26, lead=30, after=4)),
+          Paragraph("RAGOps: Operating and Managing Retrieval-Augmented Generation Pipelines", CT(14, SERIF_B, lead=18, after=3)),
+          Paragraph("Project: RAHBAR (FAST-NUCES rules, fees and annual reports)", CT(11.5, SERIF_I)),
+          Spacer(1, 11 * mm), rule(0.4), Spacer(1, 1.2 * mm), rule(1.4), Spacer(1, 9 * mm),
+          Paragraph("Course: Software Construction and Development (CS4032)", CT(12.5, SERIF, after=3)),
+          Paragraph("Semester: Fall 2026", CT(12.5, SERIF, after=3)),
+          Paragraph(f"Date: {COVER_DATE}", CT(12.5, SERIF, after=10))]
+members = Table([[Paragraph("<b>Group member</b>", CT(11, SERIF_B)), Paragraph("<b>Roll number</b>", CT(11, SERIF_B))],
+                 [Paragraph("Muhammad Sajawal Khan", CT(11.5, SERIF)), Paragraph("24K-3068", CT(11.5, SERIF))],
+                 [Paragraph("Muhammad Abdullah", CT(11.5, SERIF)), Paragraph("24I-3141", CT(11.5, SERIF))]],
+                colWidths=[75 * mm, 45 * mm], hAlign="CENTER")
+members.setStyle(TableStyle([("GRID", (0, 0), (-1, -1), 0.6, BLACK), ("BOX", (0, 0), (-1, -1), 1.2, BLACK),
+                             ("LINEBELOW", (0, 0), (-1, 0), 1.2, BLACK), ("TOPPADDING", (0, 0), (-1, -1), 4),
+                             ("BOTTOMPADDING", (0, 0), (-1, -1), 4), ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
+cover += [Paragraph("Group members", CT(13, SERIF_B, after=4)), members, Spacer(1, 11 * mm),
+          Paragraph(f"Repository: {REPO}", CT(10.5, SERIF_I)), PageBreak()]
+
+
+story = list(cover)
+story += [P("Assignment 03: RAGOps for RAHBAR", ParagraphStyle("t", parent=ss["Title"], fontName=SERIF_B, fontSize=16,
+                                                                 leading=19, spaceAfter=5, textColor=BLACK)),
           P("RAHBAR (Assignment 02) is a grounded question-answering pipeline over FAST-NUCES rules, fees and annual reports. "
             "This report covers the RAGOps layer added in Assignment 03. All numbers come from files committed under "
             "<font face='Courier'>eval/results/</font>, <font face='Courier'>traces/</font> and <font face='Courier'>reports/evidence/</font>. "
@@ -211,16 +270,38 @@ for label, caption in SHOT_LIST:
     img = SHOTS / f"{label}.png"
     if not img.exists():
         continue
-    story.append(KeepTogether([P(f"<b>{label}.</b> {caption}", B), Image(str(img), width=180 * mm, height=180 * mm * 9 / 16), Spacer(1, 4 * mm)]))
+    story.append(KeepTogether([P(f"<b>{label}.</b> {caption}", CAP), framed(Image(str(img), width=176 * mm, height=176 * mm * 9 / 16)), Spacer(1, 5 * mm)]))
 
 
-def footer(canvas, doc):
-    canvas.setFont("Helvetica", 7)
-    canvas.drawString(15 * mm, 8 * mm, "Assignment 03 RAGOps report")
-    canvas.drawRightString(195 * mm, 8 * mm, f"page {doc.page}")
+def page_frame(canvas, doc):
+    w, h = A4
+    canvas.saveState()
+    canvas.setStrokeColor(BLACK)
+    canvas.setLineWidth(1.4)
+    canvas.rect(8 * mm, 8 * mm, w - 16 * mm, h - 16 * mm)
+    canvas.setLineWidth(0.4)
+    canvas.rect(9.8 * mm, 9.8 * mm, w - 19.6 * mm, h - 19.6 * mm)
+    canvas.setFillColor(BLACK)
+    canvas.setFont(SERIF, 8.5)
+    canvas.drawCentredString(w / 2, 12.4 * mm, f"Page {doc.page}")
+    if doc.page > 1:
+        canvas.setFont(SERIF_I, 8)
+        canvas.drawString(16 * mm, 12.4 * mm, "Assignment 03: RAGOps (CS4032)")
+        canvas.drawRightString(w - 16 * mm, 12.4 * mm, "FAST-NUCES, Fall 2026")
+    canvas.restoreState()
 
 
-doc = SimpleDocTemplate(str(OUT), pagesize=A4, leftMargin=15 * mm, rightMargin=15 * mm, topMargin=13 * mm, bottomMargin=14 * mm,
-                        title="Assignment 03 RAGOps report")
-doc.build(story, onFirstPage=footer, onLaterPages=footer)
+def add_rules(flowables):
+    out = []
+    for fl in flowables:
+        out.append(fl)
+        if isinstance(fl, Paragraph) and fl.style.name == "h1":
+            out.append(HRFlowable(width="100%", thickness=0.7, color=BLACK, spaceBefore=0, spaceAfter=4))
+    return out
+
+
+doc = SimpleDocTemplate(str(OUT), pagesize=A4, leftMargin=17 * mm, rightMargin=17 * mm, topMargin=16 * mm,
+                        bottomMargin=19 * mm, title="Assignment 03 RAGOps report",
+                        author="Muhammad Sajawal Khan, Muhammad Abdullah")
+doc.build(add_rules(story), onFirstPage=page_frame, onLaterPages=page_frame)
 print(OUT)
