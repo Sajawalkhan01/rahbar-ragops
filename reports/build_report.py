@@ -112,10 +112,10 @@ def rule(thick):
 
 
 cover = [Spacer(1, 12 * mm)]
-if (ASSETS / "nuces-seal.png").exists():
-    seal = Image(str(ASSETS / "nuces-seal.png"), width=42 * mm, height=42 * mm)
-    seal.hAlign = "CENTER"
-    cover += [seal, Spacer(1, 6 * mm)]
+if (ASSETS / "nuces-logo.png").exists():
+    logo = Image(str(ASSETS / "nuces-logo.png"), width=40 * mm, height=40 * mm * 148 / 151)
+    logo.hAlign = "CENTER"
+    cover += [logo, Spacer(1, 6 * mm)]
 cover += [Paragraph("National University of Computer &amp; Emerging Sciences", CT(17, lead=21)),
           Paragraph("(FAST-NUCES), Islamabad", CT(13, SERIF, after=2)),
           Spacer(1, 2 * mm), Paragraph("Department of Software Engineering", CT(13, SERIF)),
