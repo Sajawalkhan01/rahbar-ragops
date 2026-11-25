@@ -85,7 +85,7 @@ story += [P("Assignment 03: RAGOps for RAHBAR", ParagraphStyle("t", parent=ss["T
           P("RAHBAR (Assignment 02) is a grounded question-answering pipeline over FAST-NUCES rules, fees and annual reports. "
             "This report covers the RAGOps layer added in Assignment 03. All numbers come from files committed under "
             "<font face='Courier'>eval/results/</font>, <font face='Courier'>traces/</font> and <font face='Courier'>reports/evidence/</font>. "
-            "Items marked <font color='#9b1c1c'>[PENDING]</font> have not been done yet and are not filled in with invented content.")]
+            "Known gaps are stated where they occur (section on Part F limits, short answers, and Part E).")]
 
 # ---------------------------------------------------------------- G1
 story.append(P("1. Figure 3 stages mapped to this pipeline", H1))
@@ -139,6 +139,11 @@ story.append(P("<b>Release decision.</b> top_k 3 is released: it passes every ru
                "<b>Caveat:</b> its false-abstention rate rose from 0.174 to 0.217 and the gate has no rule for that, so a worse user-facing behaviour passed. "
                "chunk 200 is rejected: better recall@5 but the right chunk ranks lower (MRR, nDCG@5 fall beyond the allowed drop). Editing the ConfigMap "
                "(max_mrr_drop 0.03 to 0.08, max_ndcg5_drop to 0.05) made the same candidate pass in the cluster with no image rebuild; that shows the gate is policy, not that the candidate improved."))
+story.append(P("<b>Cluster re-run (25 Nov, evaluation Jobs on minikube).</b> The Jobs were run again on the current data (Batch B ingested, 627 chunks, 58 golden questions), so these numbers differ from the table above, which was measured before Batch B on 34 questions. "
+               "Baseline: recall@5 0.839, MRR 0.762, nDCG@5 0.780, answer correctness 0.679, faithfulness 1.000, p95 latency 326 ms; two runs differed by 0.0 on every quality metric. "
+               "candidate-topk3: all rules PASS, release allowed (C2). candidate-bad (top_k 1, relevance floor 0.90): answer correctness 0.464 against a baseline of 0.679 and an absolute floor of 0.50, so the gate rejects it and the Job fails (C1). "
+               "Changing only the ConfigMap threshold min_answer_correctness from 0.50 to 0.95, with the same image, made topk3 fail the gate (F3-b); the committed thresholds were restored afterwards. "
+               "The chunk-200 candidate was not re-run in the cluster: its index holds only Batch A, so comparing it with a baseline that includes Batch B would not be fair.", B))
 story.append(P("Part D: traces and guardrails", H2))
 story.append(P("400 traces summarised (eval runs): abstention rate 0.35, cache hit rate not measured (cache bypassed in eval), retrieval p50/p95 26/462 ms, "
                "36 injection attempts flagged (26 questions, 10 retrieved-passage sentences removed from the planted note). The inspector rebuilds the prompt from the stored passages and the hash matches "
@@ -183,28 +188,30 @@ story.append(PageBreak())
 story.append(P("Appendix: screenshots A-F", H1))
 SHOTS = Path(__file__).resolve().parent / "evidence" / "screenshots"
 SHOT_LIST = [
-    ("A1", "Batch B verification report: 8 PASS, 10 FAIL, with the reason per check (command: Get-Content eval/results/ingestion/verification-20261122T172354Z-batchB-first.md). The screenshot shows the report file written by the 22 Nov ingestion run."),
-    ("A2", "Second ingestion run on the unchanged Batch A corpus: chunks_embedded 0, nothing new or changed (result file of the 22 Nov run, ingest-20261122T124228Z-batchA-second.json). The same 0-chunk result on the cluster is in reports/evidence/F2-cronjob-manual-run.txt."),
+    ("A1", "Batch B verification report: 8 PASS, 10 FAIL, with the reason per check (Get-Content eval/results/ingestion/verification-20261122T172354Z-batchB-first.md). The screenshot shows the report file written by the 22 Nov ingestion run."),
+    ("A2", "Second ingestion run on the unchanged Batch A corpus: chunks_embedded 0, nothing new or changed (result file of the 22 Nov run)."),
+    ("A2-cluster", "The same on the cluster, run again on 24 Nov: the ingest Job found 9 documents, all unchanged, chunks_embedded 0, 627 chunks in the collection, index_changed false."),
     ("B", "Evaluation summary with the three levels (module, component, end-to-end), noise tests and run-to-run difference: eval/results/suite-baseline-20261122T125448Z.md (state A, 29 golden questions at that time)."),
+    ("C1", "Release gate failing: candidate-bad (top_k 1, floor 0.90) on the cluster. Answer correctness 0.4643 fails both the baseline rule and the 0.50 floor; the Job status is Failed."),
+    ("C2", "Release gate passing: candidate-topk3 on the cluster. Every rule passes, GATE: PASS, release allowed."),
+    ("D1", "One full trace record from the API pod (kubectl logs): query, retrieved chunks with scores and versions, filters, prompt hash, model parameters, response, citations, guardrails, latency per stage, cache miss."),
+    ("D2", "The trace tool rebuilding the prompt for trace a91fc945...: collection, embedding model version, retrieved order, the exact context and prompt, and the recorded and rebuilt hashes: MATCH."),
     ("E1", "Coverage before: 34 golden questions, 40 live queries, 47.5% (live run on 24 Nov with nomic-embed-text; exits non-zero below 85%)."),
     ("E2", "Coverage after adding golden questions n01-n24 and live queries l41-l46: 58 golden, 46 live, 82.6% (live run, still below the 85% requirement)."),
+    ("F1", "kubectl get all,pvc,configmap,cronjob,job -n ragops: API Deployment, Chroma StatefulSet, Redis, the Jobs and CronJob, the four PersistentVolumeClaims (all Bound) and the ConfigMaps."),
+    ("F2b", "Log of the completed evaluation Job (baseline suite, two runs)."),
+    ("F3-a", "Gate threshold before the change: min_answer_correctness 0.50 in the release-thresholds ConfigMap."),
+    ("F3-b", "Same candidate after the ConfigMap edit (min_answer_correctness 0.95, no image rebuild): the Job is re-run and the gate now says FAIL - release rejected."),
+    ("F4-a", "A bad release applied to the live API (rollout revision 5, collection rahbar_c200, top_k 1): rollout status, a query, and the trace showing collection rahbar_c200."),
+    ("F4-b", "kubectl rollout undo: rollout status and history (revision 6 is the previous release). The trace line printed by the script in this screenshot is still the previous pod's, because that pod was terminating; the new trace is in F4-b2."),
+    ("F4-b2", "After the undo: a new query and its new trace (a4d55b3b...) show collection rahbar, embedding model nomic-embed-text, version 0a109f422b47, the same as before the bad release."),
+    ("F4-c", "kubectl rollout history deployment/api with the change-cause annotations."),
 ]
-shown = []
 for label, caption in SHOT_LIST:
     img = SHOTS / f"{label}.png"
     if not img.exists():
         continue
-    shown.append(label)
     story.append(KeepTogether([P(f"<b>{label}.</b> {caption}", B), Image(str(img), width=180 * mm, height=180 * mm * 9 / 16), Spacer(1, 4 * mm)]))
-story.append(P("Screenshots still to add (from the cluster): C gate failing and passing, D one full trace and the trace tool, F cluster state, Job logs, ConfigMap edit, rollout status and undo. "
-               "The committed text output of these runs is listed below.", B))
-story.append(table([
-    ["Item", "Required", "Text evidence (screenshot <font color='#9b1c1c'>[PENDING]</font>)"],
-    ["C", "Gate failing and passing", "F3-gate-fail-chunk200-job.txt, F3-gate-pass-topk3-job.txt"],
-    ["D", "One full trace; tool rebuilding the prompt", "D2-trace-inspector-guardrail.txt, traces/logs/k8s/*.jsonl"],
-    ["F", "get all,pvc,configmap,cronjob,job; ingest and eval Job logs; gate change after ConfigMap edit; rollout status and undo with trace",
-     "F1-cluster-state.txt, F2-ingest-batch-a-job.txt, F2-threshold-change-gate-pass.txt, F4-F6"],
-], [12, 70, 98]))
 
 
 def footer(canvas, doc):
